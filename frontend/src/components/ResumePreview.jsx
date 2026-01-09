@@ -498,14 +498,21 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
       case 'workExperience':
         return normalizedWork.length ? renderWork(normalizedWork, 'Work Experience') : null
       case 'internship':
-        return normalizedInternships.length ? renderWork(normalizedInternships, 'Internship Experience') : null
+        // Only render internship section if there's data
+        if (!normalizedInternships || normalizedInternships.length === 0) {
+          console.log('No internship data, skipping section')
+          return null
+        }
+        return renderWork(normalizedInternships, 'Internship Experience')
       case 'certificates':
       case 'certifications':
-        return renderCertifications()
+        // Only render certifications section if there's data
+        const certs = certificates.length > 0 ? certificates : certifications
+        return certs && certs.length > 0 ? renderCertifications() : null
       case 'languages':
-        return languages.length ? renderLanguages() : null
+        return languages && languages.length ? renderLanguages() : null
       case 'customSections':
-        return customSections.length ? renderCustom() : null
+        return customSections && customSections.length ? renderCustom() : null
       default:
         return null
     }
