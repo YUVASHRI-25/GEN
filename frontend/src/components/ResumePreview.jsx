@@ -1,10 +1,15 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useResume } from '../context/ResumeContext'
+import { TEMPLATES } from '../templates'
 import './ResumePreview.css'
 
-function ResumePreview({ zoomLevel = 1, template, dataOverride }) {
-  const { resumeData } = useResume()
+function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) {
+  const { resumeData, selectedTemplate, setSelectedTemplate, setSelectedTemplateData } = useResume()
   const data = dataOverride || resumeData
+  const [showTemplateSelector, setShowTemplateSelector] = useState(false)
+  
+  // Use propTemplate if provided, otherwise use the selected template
+  const template = propTemplate || selectedTemplateData
   const {
     contact = {},
     summary,
@@ -59,8 +64,16 @@ function ResumePreview({ zoomLevel = 1, template, dataOverride }) {
     padding: '20px 0'
   }
 
+  const handleTemplateChange = (templateId) => {
+    const newTemplate = TEMPLATES.find(t => t.id === templateId)
+    if (newTemplate) {
+      setSelectedTemplate(templateId)
+      setSelectedTemplateData(newTemplate)
+    }
+    setShowTemplateSelector(false)
+  }
+
   const renderContact = () => {
-    const separator = theme.contactSeparator || ' | '
     const contactBits = [
       contact.email,
       contact.phone,
@@ -106,13 +119,15 @@ function ResumePreview({ zoomLevel = 1, template, dataOverride }) {
             fontSize: theme.bodySize || '10px',
             color: theme.secondary || '#333',
             gap: '8px',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            display: 'flex',
+            flexWrap: 'wrap'
           }}
         >
           {contactBits.map((item, idx) => (
             <span key={idx}>
               {item}
-              {idx < contactBits.length - 1 ? separator : ''}
+              {idx < contactBits.length - 1 ? ' | ' : ''}
             </span>
           ))}
         </div>
@@ -399,13 +414,13 @@ function ResumePreview({ zoomLevel = 1, template, dataOverride }) {
 
   const renderContent = () => {
     // Filter out 'contact' from sections since it's rendered separately at the top
-    const filteredSections = sectionsOrder.filter(sec => sec !== 'contact')
+    const filteredSections = [...new Set([...sectionsOrder, 'customSections'])].filter(sec => sec !== 'contact')
     
     if (template?.layout?.type === 'two-column' && template.layout.columns) {
       const { left = [], right = [] } = template.layout.columns
-      // Filter out 'contact' from column arrays as well
-      const leftFiltered = left.filter(sec => sec !== 'contact')
-      const rightFiltered = right.filter(sec => sec !== 'contact')
+      // Filter out 'contact' from column arrays and ensure customSections are included
+      const leftFiltered = [...new Set([...left, 'customSections'])].filter(sec => sec !== 'contact')
+      const rightFiltered = [...new Set([...right, 'customSections'])].filter(sec => sec !== 'contact')
       
       return (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
@@ -416,13 +431,18 @@ function ResumePreview({ zoomLevel = 1, template, dataOverride }) {
           </div>
           <div>
             {rightFiltered.map((sec) => (
-              <div key={sec}>{renderSection(sec)}</div>
+              <div key={sec}>{renderSection(sec)}
+                {/* Always render custom sections at the bottom of the right column in two-column layout */}
+                {sec === rightFiltered[rightFiltered.length - 1] && customSections.length > 0 && 
+                  !rightFiltered.includes('customSections') && renderSection('customSections')}
+              </div>
             ))}
           </div>
         </div>
       )
     }
 
+    // For single column layout, just include customSections in the normal flow
     return filteredSections.map((section) => <div key={section}>{renderSection(section)}</div>)
   }
 
@@ -436,6 +456,29 @@ function ResumePreview({ zoomLevel = 1, template, dataOverride }) {
 
   return (
     <div className="resume-preview" style={zoomLevel !== 1 ? { overflow: 'auto', maxHeight: '90vh' } : {}}>
+      <div className="preview-controls">
+        <div className="template-selector">
+          <button 
+            className="template-selector-button"
+            onClick={() => setShowTemplateSelector(!showTemplateSelector)}
+          >
+            🎨 Change Template
+          </button>
+          {showTemplateSelector && (
+            <div className="template-dropdown">
+              {TEMPLATES.map((t) => (
+                <div 
+                  key={t.id}
+                  className={`template-option ${selectedTemplate === t.id ? 'active' : ''}`}
+                  onClick={() => handleTemplateChange(t.id)}
+                >
+                  {t.name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
       <div style={zoomLevel !== 1 ? zoomStyle : {}}>
         <div
           className="resume-paper"

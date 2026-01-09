@@ -25,7 +25,7 @@ export const TEMPLATES = [
       itemSpacing: '10px',
       padding: '32px 40px',
     },
-    sections: ['contact', 'summary', 'education', 'workExperience', 'projects', 'skills', 'certifications'],
+    sections: ['contact', 'summary', 'education', 'workExperience', 'projects', 'skills', 'certifications', 'languages'],
     dummyData: {
       contact: {
         name: 'SEBASTIAN BENNETT',
@@ -72,6 +72,11 @@ export const TEMPLATES = [
       ],
       skills: ['Auditing', 'Financial Accounting', 'Financial Reporting', 'Budgeting', 'GAAP'],
       certifications: ['CPA', 'Chartered Accountant'],
+      languages: [
+        { language: 'English', proficiency: 'Native' },
+        { language: 'Spanish', proficiency: 'Professional' },
+        { language: 'French', proficiency: 'Basic' }
+      ],
     },
   },
   {
@@ -130,6 +135,10 @@ export const TEMPLATES = [
         'Problem-solving',
         'Time management',
       ],
+      languages: [
+        { language: 'English', proficiency: 'Native' },
+        { language: 'Spanish', proficiency: 'Fluent' }
+      ],
     },
   },
   {
@@ -163,7 +172,7 @@ export const TEMPLATES = [
       itemSpacing: '10px',
       padding: '30px 34px',
     },
-    sections: ['contact', 'summary', 'skills', 'workExperience', 'education', 'certifications'],
+    sections: ['contact', 'summary', 'technicalSkills', 'workExperience', 'education', 'certifications', 'languages'],
     dummyData: {
       contact: {
         name: 'ALEX MORGAN',
@@ -174,7 +183,7 @@ export const TEMPLATES = [
       },
       summary:
         'Product designer focused on usable, accessible experiences. Partnered closely with PM and Eng to ship outcomes.',
-      skills: ['UI Design', 'Figma', 'User Research', 'Prototyping', 'Design Systems', 'Accessibility'],
+      technicalSkills: ['UI Design', 'Figma', 'User Research', 'Prototyping', 'Design Systems', 'Accessibility'],
       workExperience: [
         {
           position: 'Senior Product Designer',
@@ -188,6 +197,11 @@ export const TEMPLATES = [
           duration: '2018 - 2021',
           description: 'Shipped mobile redesign increasing retention 12%.',
         },
+      ],
+      languages: [
+        { language: 'English', proficiency: 'Native' },
+        { language: 'Spanish', proficiency: 'Intermediate' },
+        { language: 'German', proficiency: 'Basic' }
       ],
       projects: [
         {
@@ -233,7 +247,7 @@ export const TEMPLATES = [
       itemSpacing: '12px',
       padding: '34px 42px',
     },
-    sections: ['contact', 'summary', 'workExperience', 'projects', 'education', 'skills'],
+    sections: ['contact', 'summary', 'workExperience', 'projects', 'education', 'skills', 'languages'],
     dummyData: {
       contact: {
         name: 'PRIYA SHARMA',
@@ -277,6 +291,11 @@ export const TEMPLATES = [
       ],
       education: [{ degree: 'B.Tech Computer Science', institution: 'NIT', year: '2016 - 2020' }],
       skills: ['SQL', 'Python', 'Tableau', 'Statistics', 'A/B Testing'],
+      languages: [
+        { language: 'English', proficiency: 'Professional' },
+        { language: 'Hindi', proficiency: 'Native' },
+        { language: 'Kannada', proficiency: 'Fluent' }
+      ],
     },
   },
   {
