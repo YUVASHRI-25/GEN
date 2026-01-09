@@ -116,19 +116,17 @@ function Projects() {
   const [isSaving, setIsSaving] = useState(false);
 
   const handleSaveAll = async () => {
-    if (!resumeData.projects || resumeData.projects.length === 0) {
-      return { success: true };
-    }
-    
     try {
       setIsSaving(true);
-      const response = await saveResume({ 
-        ...resumeData,
-        projects: resumeData.projects 
-      });
-      return { success: true, data: response };
+      // The projects are already in the resumeData state managed by the context
+      // The context's useEffect will automatically save to localStorage
+      // If you need to save to a backend, you would do it here
+      console.log('Projects saved successfully:', resumeData.projects);
+      alert('Projects saved successfully!');
+      return { success: true };
     } catch (error) {
       console.error('Failed to save projects:', error);
+      alert('Failed to save projects. Please try again.');
       throw error;
     } finally {
       setIsSaving(false);

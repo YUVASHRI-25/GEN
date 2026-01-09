@@ -1,0 +1,282 @@
+{
+  "name": "Executive",
+  "version": "1.0.1",
+  "description": "Professional template for executives and senior professionals",
+  
+  "layout": "single_column",
+  
+  "sections": [
+    "contact",
+    "professionalSummary",
+    "coreCompetencies",
+    "professionalExperience",
+    "education",
+    "leadership",
+    "certifications"
+  ],
+  
+  "styling": {
+    "fontFamily": "'Times New Roman', serif",
+    "fontSize": {
+      "name": "22px",
+      "sectionTitle": "16px",
+      "body": "12px"
+    },
+    "margins": {
+      "top": "0.75in",
+      "bottom": "0.75in",
+      "left": "1in",
+      "right": "1in"
+    },
+    "lineHeight": "1.3",
+    "colors": {
+      "primary": "#000000",
+      "secondary": "#333333",
+      "accent": "#1a1a1a"
+    }
+  },
+  
+  "sectionConfig": {
+    "contact": {
+      "required": true,
+      "fields": ["name", "email", "phone"],
+      "optionalFields": ["linkedin", "address", "portfolio"],
+      "layout": "centered"
+    },
+    "professionalSummary": {
+      "required": true,
+      "maxLength": 250,
+      "format": "paragraph"
+    },
+    "coreCompetencies": {
+      "required": true,
+      "maxItems": 20,
+      "categorize": true,
+      "categories": ["Leadership", "Strategic Planning", "Financial Acumen", "Operational Excellence", "Stakeholder Management"],
+      "maxItemsPerCategory": 8,
+      "showProficiency": true,
+      "proficiencyLevels": ["Expert", "Advanced", "Intermediate"],
+      "proficiencyScale": 5,
+      "showIcons": true,
+      "groupByProficiency": true,
+      "skills": [
+        {
+          "name": "Executive Leadership",
+          "category": "Leadership",
+          "proficiency": 5,
+          "icon": "user-tie"
+        },
+        {
+          "name": "Change Management",
+          "category": "Leadership",
+          "proficiency": 5,
+          "icon": "exchange-alt"
+        },
+        {
+          "name": "Corporate Strategy",
+          "category": "Strategic Planning",
+          "proficiency": 5,
+          "icon": "chess-queen"
+        },
+        {
+          "name": "Market Analysis",
+          "category": "Strategic Planning",
+          "proficiency": 4,
+          "icon": "chart-line"
+        },
+        {
+          "name": "Financial Forecasting",
+          "category": "Financial Acumen",
+          "proficiency": 5,
+          "icon": "chart-pie"
+        },
+        {
+          "name": "P&L Management",
+          "category": "Financial Acumen",
+          "proficiency": 5,
+          "icon": "file-invoice-dollar"
+        },
+        {
+          "name": "Process Optimization",
+          "category": "Operational Excellence",
+          "proficiency": 4,
+          "icon": "cogs"
+        },
+        {
+          "name": "Risk Management",
+          "category": "Operational Excellence",
+          "proficiency": 5,
+          "icon": "shield-alt"
+        },
+        {
+          "name": "Investor Relations",
+          "category": "Stakeholder Management",
+          "proficiency": 5,
+          "icon": "handshake"
+        },
+        {
+          "name": "Board Communication",
+          "category": "Stakeholder Management",
+          "proficiency": 5,
+          "icon": "comments"
+        },
+        {
+          "name": "Mergers & Acquisitions",
+          "category": "Strategic Planning",
+          "proficiency": 4,
+          "icon": "hand-holding-usd"
+        },
+        {
+          "name": "Corporate Governance",
+          "category": "Leadership",
+          "proficiency": 5,
+          "icon": "landmark"
+        },
+        {
+          "name": "Digital Transformation",
+          "category": "Operational Excellence",
+          "proficiency": 4,
+          "icon": "robot"
+        },
+        {
+          "name": "Talent Development",
+          "category": "Leadership",
+          "proficiency": 5,
+          "icon": "users"
+        },
+        {
+          "name": "Crisis Management",
+          "category": "Leadership",
+          "proficiency": 5,
+          "icon": "fire-extinguisher"
+        }
+      ]
+    },
+    "professionalExperience": {
+      "required": true,
+      "maxItems": 5,
+      "showDuration": true,
+      "showLocation": true,
+      "showTeamSize": true,
+      "showBudget": true,
+      "showAchievements": true,
+      "fields": [
+        "company",
+        "position",
+        "startDate",
+        "endDate",
+        "location",
+        "scope",
+        "teamSize",
+        "budget",
+        "keyAchievements",
+        "technologies"
+      ]
+    },
+    "strategicInitiatives": {
+      "required": true,
+      "maxItems": 4,
+      "showDuration": true,
+      "showStakeholders": true,
+      "showImpact": true,
+      "fields": [
+        "initiativeName",
+        "organization",
+        "role",
+        "startDate",
+        "endDate",
+        "stakeholders",
+        "challenges",
+        "solutions",
+        "impact",
+        "technologies"
+      ]
+    },
+    "education": {
+      "required": true,
+      "showGPA": false,
+      "showThesis": true,
+      "includeExecutiveEducation": true,
+      "fields": [
+        "institution",
+        "degree",
+        "fieldOfStudy",
+        "startDate",
+        "endDate",
+        "honors",
+        "thesis",
+        "executivePrograms"
+      ]
+    },
+    "boardMemberships": {
+      "required": false,
+      "maxItems": 5,
+      "showDuration": true,
+      "showOrganizationType": true,
+      "fields": [
+        "organization",
+        "position",
+        "startDate",
+        "endDate",
+        "organizationType",
+        "keyContributions"
+      ]
+    },
+    "leadership": {
+      "required": false,
+      "maxItems": 5,
+      "showDuration": true,
+      "showScope": true,
+      "fields": [
+        "role",
+        "organization",
+        "startDate",
+        "endDate",
+        "scope",
+        "achievements"
+      ]
+    },
+    "certifications": {
+      "required": false,
+      "showDates": true,
+      "showIssuer": true,
+      "fields": [
+        "name",
+        "issuer",
+        "issueDate",
+        "expirationDate",
+        "credentialID"
+      ]
+    },
+    "publications": {
+      "required": false,
+      "maxItems": 5,
+      "showPublisher": true,
+      "showDate": true,
+      "fields": [
+        "title",
+        "publisher",
+        "publicationDate",
+        "coAuthors",
+        "url"
+      ]
+    }
+  },
+  
+  "ats": {
+    "friendly": true,
+    "noImages": true,
+    "noTables": true,
+    "noColumns": true,
+    "standardFonts": true,
+    "parseableDates": true,
+    "keywordOptimized": true
+  },
+  
+  "formatting": {
+    "sectionDivider": "line",
+    "bulletStyle": "•",
+    "dateFormat": "MMM YYYY",
+    "phoneFormat": "(XXX) XXX-XXXX"
+  }
+}

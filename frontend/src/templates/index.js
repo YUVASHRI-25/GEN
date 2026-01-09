@@ -5,6 +5,7 @@ export const TEMPLATES = [
     name: 'Modern Minimal',
     description: 'Single-column, clean spacing, uppercase headings',
     layout: { type: 'single-column' },
+    showProjects: true,
     theme: {
       fontFamily: "'Inter', Arial, sans-serif",
       nameSize: '32px',
@@ -24,7 +25,7 @@ export const TEMPLATES = [
       itemSpacing: '10px',
       padding: '32px 40px',
     },
-    sections: ['contact', 'summary', 'education', 'workExperience', 'skills', 'certifications'],
+    sections: ['contact', 'summary', 'education', 'workExperience', 'projects', 'skills', 'certifications'],
     dummyData: {
       contact: {
         name: 'SEBASTIAN BENNETT',
@@ -48,10 +49,26 @@ export const TEMPLATES = [
         },
         {
           position: 'Financial Accountant',
-          company: 'Salford & Co.',
+          company: 'Marble & Granite Inc.',
           duration: '2030-2033',
-          description: 'Prepared statements and ensured compliance with standards.',
+          description: 'Prepared financial statements and maintained general ledger.',
         },
+      ],
+      projects: [
+        {
+          name: 'Financial Analytics Dashboard',
+          description: 'Developed a comprehensive financial dashboard for real-time expense tracking and budget analysis.',
+          technologies: ['Excel', 'Power BI', 'SQL'],
+          duration: '2023-2024',
+          link: ''
+        },
+        {
+          name: 'Tax Optimization System',
+          description: 'Created a system to optimize tax calculations and identify potential savings for clients.',
+          technologies: ['Python', 'Pandas', 'Flask'],
+          duration: '2022-2023',
+          link: ''
+        }
       ],
       skills: ['Auditing', 'Financial Accounting', 'Financial Reporting', 'Budgeting', 'GAAP'],
       certifications: ['CPA', 'Chartered Accountant'],
@@ -119,6 +136,7 @@ export const TEMPLATES = [
     id: 'two-column-bold',
     name: 'Two-Column Bold',
     description: 'Two-column layout with bold headings and clear separation',
+    showProjects: true,
     layout: {
       type: 'two-column',
       columns: {
@@ -171,6 +189,22 @@ export const TEMPLATES = [
           description: 'Shipped mobile redesign increasing retention 12%.',
         },
       ],
+      projects: [
+        {
+          name: 'Design System Implementation',
+          description: 'Led the development and implementation of a comprehensive design system used across all company products.',
+          technologies: ['Figma', 'Storybook', 'React'],
+          duration: '2022-2023',
+          link: ''
+        },
+        {
+          name: 'User Onboarding Redesign',
+          description: 'Redesigned the onboarding flow resulting in a 25% increase in user activation.',
+          technologies: ['Figma', 'Prototyping', 'User Testing'],
+          duration: '2021-2022',
+          link: ''
+        }
+      ],
       education: [{ degree: 'B.Des Interaction Design', institution: 'Art School', year: '2014 - 2018' }],
       certifications: ['NN/g UX Certification'],
     },
@@ -220,11 +254,26 @@ export const TEMPLATES = [
       ],
       projects: [
         {
-          name: 'Sales Forecasting',
+          name: 'Sales Forecasting Dashboard',
           duration: 'Q2 2023',
-          description: 'Created time-series forecasts improving accuracy by 8%.',
-          technologies: ['Python', 'pandas'],
+          description: 'Developed a time-series forecasting model that improved sales prediction accuracy by 8% using Python and pandas.',
+          technologies: ['Python', 'pandas', 'Prophet', 'Tableau'],
+          link: ''
         },
+        {
+          name: 'Customer Segmentation Analysis',
+          duration: 'Q1 2023',
+          description: 'Implemented K-means clustering to identify key customer segments, resulting in a 15% increase in marketing campaign effectiveness.',
+          technologies: ['Python', 'scikit-learn', 'Matplotlib', 'Seaborn'],
+          link: ''
+        },
+        {
+          name: 'Data Pipeline Optimization',
+          duration: 'Q4 2022',
+          description: 'Optimized ETL processes, reducing data processing time by 40% and improving data quality.',
+          technologies: ['SQL', 'Python', 'Apache Airflow', 'Docker'],
+          link: ''
+        }
       ],
       education: [{ degree: 'B.Tech Computer Science', institution: 'NIT', year: '2016 - 2020' }],
       skills: ['SQL', 'Python', 'Tableau', 'Statistics', 'A/B Testing'],
@@ -235,6 +284,7 @@ export const TEMPLATES = [
     name: 'Compact ATS',
     description: 'ATS-friendly, tight spacing, clear headings',
     layout: { type: 'single-column' },
+    showProjects: true,
     theme: {
       fontFamily: "'Arial', sans-serif",
       nameSize: '26px',
@@ -265,27 +315,49 @@ export const TEMPLATES = [
       },
       summary:
         'Engineer focused on backend services and APIs with strong attention to reliability and performance.',
-      skills: ['JavaScript', 'TypeScript', 'Node.js', 'REST', 'SQL', 'Docker'],
+      skills: ['JavaScript', 'TypeScript', 'Node.js', 'REST', 'SQL', 'Docker', 'AWS', 'Microservices'],
       workExperience: [
         {
-          position: 'Backend Engineer',
-          company: 'Acme Corp',
-          duration: '2022 - Present',
-          description: 'Own API layer and observability improvements.',
+          position: 'Senior Software Engineer',
+          company: 'TechCorp',
+          duration: '2021 - Present',
+          description: 'Led development of core services handling 10K+ RPS.',
+        },
+        {
+          position: 'Software Engineer',
+          company: 'DevSolutions',
+          duration: '2019 - 2021',
+          description: 'Built and maintained microservices architecture.',
         },
       ],
       projects: [
         {
-          name: 'Notifications Service',
-          duration: '2023',
-          description: 'Built scalable notifications system with retries and DLQ.',
-          technologies: ['Node', 'RabbitMQ'],
+          name: 'Distributed Task Queue System',
+          description: 'Designed and implemented a high-performance distributed task queue system using Node.js and Redis, reducing task processing time by 60%.',
+          technologies: ['Node.js', 'Redis', 'Docker', 'Kubernetes'],
+          duration: '2022-2023',
+          link: 'https://github.com/example/task-queue'
         },
+        {
+          name: 'API Gateway Service',
+          description: 'Developed a scalable API gateway handling authentication, rate limiting, and request routing for 50+ microservices.',
+          technologies: ['Node.js', 'Express', 'JWT', 'Redis'],
+          duration: '2021-2022',
+          link: 'https://github.com/example/api-gateway'
+        },
+        {
+          name: 'Real-time Analytics Dashboard',
+          description: 'Created a real-time dashboard for monitoring system metrics and business KPIs with WebSocket integration.',
+          technologies: ['React', 'WebSocket', 'D3.js', 'Node.js'],
+          duration: '2020-2021',
+          link: 'https://github.com/example/analytics-dashboard'
+        }
       ],
-      education: [{ degree: 'B.S. Computer Science', institution: 'State University', year: '2017 - 2021' }],
+      education: [
+        { degree: 'B.S. Computer Science', institution: 'State University', year: '2015 - 2019', gpa: '3.7/4.0' },
+      ],
     },
   },
 ]
 
 export const DEFAULT_TEMPLATE_ID = TEMPLATES[0].id
-

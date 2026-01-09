@@ -1,0 +1,203 @@
+{
+  "name": "Creative Portfolio",
+  "version": "1.0.0",
+  "description": "Creative template with portfolio focus",
+  
+  "layout": "two_column_creative",
+  
+  "sections": [
+    "contact",
+    "portfolio",
+    "skills",
+    "experience",
+    "education",
+    "projects",
+    "achievements"
+  ],
+  
+  "styling": {
+    "fontFamily": "'Poppins', 'Helvetica', sans-serif",
+    "fontSize": {
+      "name": "32px",
+      "sectionTitle": "20px",
+      "body": "14px"
+    },
+    "margins": {
+      "top": "0.5in",
+      "bottom": "0.5in",
+      "left": "0.75in",
+      "right": "0.75in"
+    },
+    "lineHeight": "1.6",
+    "colors": {
+      "primary": "#2d3436",
+      "secondary": "#636e72",
+      "accent": "#6c5ce7"
+    }
+  },
+  
+  "sectionConfig": {
+    "contact": {
+      "required": true,
+      "fields": ["name", "email", "phone"],
+      "optionalFields": ["website", "linkedin", "github", "behance", "dribbble", "instagram"],
+      "layout": "left"
+    },
+    "portfolio": {
+      "required": true,
+      "maxItems": 6,
+      "showImages": true,
+      "imageAspectRatio": "16:9",
+      "showCategories": true,
+      "categories": ["UI/UX Design", "Web Development", "Mobile Apps", "Graphic Design", "Illustration", "Other"],
+      "fields": [
+        "title",
+        "description",
+        "imageUrl",
+        "category",
+        "client",
+        "date",
+        "technologies",
+        "projectUrl",
+        "behanceUrl",
+        "dribbbleUrl"
+      ]
+    },
+    "skills": {
+      "required": true,
+      "maxItems": 15,
+      "showLevel": true,
+      "categories": ["Design", "Development", "Tools", "Soft Skills"],
+      "maxItemsPerCategory": 8,
+      "skillLevels": ["Expert", "Advanced", "Intermediate", "Beginner"]
+    },
+    "experience": {
+      "required": true,
+      "maxItems": 4,
+      "showDuration": true,
+      "showLocation": true,
+      "showTechnologies": true,
+      "fields": [
+        "company",
+        "position",
+        "startDate",
+        "endDate",
+        "location",
+        "description",
+        "technologies",
+        "achievements",
+        "projectLinks"
+      ]
+    },
+    "internships": {
+      "required": true,
+      "maxItems": 3,
+      "showDuration": true,
+      "showMentor": true,
+      "showTechnologies": true,
+      "fields": [
+        "company",
+        "position",
+        "startDate",
+        "endDate",
+        "location",
+        "description",
+        "technologies",
+        "mentor",
+        "achievements",
+        "projectLinks"
+      ]
+    },
+    "education": {
+      "required": true,
+      "showGPA": true,
+      "showThesis": true,
+      "includeRelevantCoursework": true,
+      "maxCoursesToShow": 5,
+      "fields": [
+        "institution",
+        "degree",
+        "fieldOfStudy",
+        "startDate",
+        "endDate",
+        "gpa",
+        "honors",
+        "thesis",
+        "relevantCoursework"
+      ]
+    },
+    "projects": {
+      "required": true,
+      "maxItems": 6,
+      "showImages": true,
+      "imageAspectRatio": "16:9",
+      "showCategories": true,
+      "showTechnologies": true,
+      "showTimeframe": true,
+      "showTeamSize": true,
+      "fields": [
+        "name",
+        "description",
+        "category",
+        "startDate",
+        "endDate",
+        "technologies",
+        "teamSize",
+        "role",
+        "challenges",
+        "solutions",
+        "results",
+        "imageUrl",
+        "demoUrl",
+        "sourceCodeUrl",
+        "caseStudyUrl"
+      ]
+    },
+    "achievements": {
+      "required": false,
+      "maxItems": 5,
+      "showDate": true,
+      "showIssuer": true,
+      "fields": [
+        "title",
+        "issuer",
+        "date",
+        "description",
+        "url"
+      ]
+    },
+    "exhibitions": {
+      "required": false,
+      "maxItems": 5,
+      "showLocation": true,
+      "showType": true,
+      "fields": [
+        "title",
+        "gallery",
+        "location",
+        "startDate",
+        "endDate",
+        "type",
+        "description",
+        "url"
+      ]
+    }
+  },
+  
+  "ats": {
+    "friendly": true,
+    "noImages": false,
+    "noTables": true,
+    "noColumns": false,
+    "standardFonts": true,
+    "parseableDates": true,
+    "keywordOptimized": true
+  },
+  
+  "formatting": {
+    "sectionDivider": "simple",
+    "bulletStyle": "→",
+    "dateFormat": "MM/YYYY",
+    "phoneFormat": "+XX XXX XXX XXXX"
+  }
+}

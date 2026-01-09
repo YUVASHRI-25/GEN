@@ -1,0 +1,194 @@
+{
+  "name": "Tech Modern",
+  "version": "1.0.0",
+  "description": "Modern template designed for tech professionals and developers",
+  
+  "layout": "two_column_tech",
+  
+  "sections": [
+    "contact",
+    "summary",
+    "technicalSkills",
+    "experience",
+    "projects",
+    "education",
+    "languages"
+  ],
+  
+  "styling": {
+    "fontFamily": "'Roboto', 'Segoe UI', sans-serif",
+    "fontSize": {
+      "name": "26px",
+      "sectionTitle": "18px",
+      "body": "13px"
+    },
+    "margins": {
+      "top": "0.5in",
+      "bottom": "0.5in",
+      "left": "0.75in",
+      "right": "0.75in"
+    },
+    "lineHeight": "1.4",
+    "colors": {
+      "primary": "#2d3436",
+      "secondary": "#636e72",
+      "accent": "#00b894"
+    }
+  },
+  
+  "sectionConfig": {
+    "contact": {
+      "required": true,
+      "fields": ["name", "email", "phone"],
+      "optionalFields": ["github", "linkedin", "portfolio", "location"],
+      "layout": "left"
+    },
+    "summary": {
+      "required": true,
+      "maxLength": 200,
+      "format": "paragraph"
+    },
+    "technicalSkills": {
+      "required": true,
+      "categories": ["Languages", "Frameworks", "Tools", "Databases", "Cloud"],
+      "maxItemsPerCategory": 8,
+      "showProficiency": true,
+      "proficiencyLevels": ["Expert", "Advanced", "Intermediate", "Beginner"],
+      "proficiencyScale": 5,
+      "showIcons": true,
+      "groupByProficiency": true,
+      "skills": [
+        {
+          "name": "JavaScript",
+          "category": "Languages",
+          "proficiency": 4,
+          "icon": "javascript"
+        },
+        {
+          "name": "Python",
+          "category": "Languages",
+          "proficiency": 5,
+          "icon": "python"
+        },
+        {
+          "name": "React",
+          "category": "Frameworks",
+          "proficiency": 4,
+          "icon": "react"
+        },
+        {
+          "name": "Node.js",
+          "category": "Frameworks",
+          "proficiency": 4,
+          "icon": "nodejs"
+        },
+        {
+          "name": "MongoDB",
+          "category": "Databases",
+          "proficiency": 3,
+          "icon": "mongodb"
+        },
+        {
+          "name": "AWS",
+          "category": "Cloud",
+          "proficiency": 3,
+          "icon": "aws"
+        },
+        {
+          "name": "Git",
+          "category": "Tools",
+          "proficiency": 4,
+          "icon": "git"
+        },
+        {
+          "name": "Docker",
+          "category": "Tools",
+          "proficiency": 3,
+          "icon": "docker"
+        }
+      ]
+    },
+    "experience": {
+      "required": true,
+      "maxItems": 4,
+      "showDuration": true,
+      "showTechnologies": true,
+      "includeInternships": true
+    },
+    "internships": {
+      "required": true,
+      "maxItems": 3,
+      "showDuration": true,
+      "showTechnologies": true,
+      "includeLocation": true,
+      "includeSupervisor": false,
+      "fields": [
+        "company",
+        "position",
+        "startDate",
+        "endDate",
+        "location",
+        "description",
+        "technologies",
+        "achievements"
+      ]
+    },
+    "projects": {
+      "required": true,
+      "maxItems": 4,
+      "showLinks": true,
+      "showTechnologies": true,
+      "fields": [
+        "name",
+        "description",
+        "technologies",
+        "startDate",
+        "endDate",
+        "url",
+        "github",
+        "role",
+        "keyAchievements",
+        "challenges"
+      ],
+      "showDemoLink": true,
+      "showSourceCode": true,
+      "showTeamSize": true,
+      "showTimeframe": true
+    },
+    "education": {
+      "required": true,
+      "showGPA": true,
+      "showThesis": true,
+      "includeRelevantCoursework": true,
+      "maxCoursesToShow": 5
+    },
+    "languages": {
+      "required": false,
+      "showProficiency": true,
+      "proficiencyLevels": ["Native", "Fluent", "Intermediate", "Basic"]
+    }
+  },
+  
+  "ats": {
+    "friendly": true,
+    "noImages": true,
+    "noTables": false,
+    "noColumns": false,
+    "standardFonts": true,
+    "parseableDates": true,
+    "keywordOptimized": true
+  },
+  
+  "formatting": {
+    "sectionDivider": "line",
+    "bulletStyle": "▹",
+    "dateFormat": "MMM YYYY",
+    "phoneFormat": "+X (XXX) XXX-XXXX"
+  },
+  
+  "specialFeatures": {
+    "skillBars": false,
+    "projectScreenshots": false,
+    "darkMode": true
+  }
+}

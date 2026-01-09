@@ -155,20 +155,45 @@ function ResumePreview({ zoomLevel = 1, template, dataOverride }) {
           listStyle: 'none',
         }}
       >
-        {skills.map((skill, index) => (
-          <li
-            key={index}
-            className="skill-item"
-            style={{
-              background: 'transparent',
-              padding: 0,
-              fontSize: theme.bodySize || '10px',
-              color: theme.primary || '#000',
-            }}
-          >
-            {template?.theme?.bullet || '•'} {skill.name || skill}
-          </li>
-        ))}
+        {skills.map((skill, index) => {
+          const proficiencyMap = {
+            // Number levels (1-5)
+            1: 'Beginner',
+            2: 'Basic',
+            3: 'Intermediate',
+            4: 'Advanced',
+            5: 'Expert',
+            // String levels (for backward compatibility)
+            'Beginner': 'Beginner',
+            'Basic': 'Basic',
+            'Intermediate': 'Intermediate',
+            'Advanced': 'Advanced',
+            'Expert': 'Expert',
+            'None': 'None'
+          };
+          
+          // Handle both string and object skill formats
+          const skillName = typeof skill === 'string' ? skill : skill.name || '';
+          const skillLevel = typeof skill === 'object' ? skill.level : 'Intermediate'; // Default to Intermediate if not specified
+          
+          // Get the level text, defaulting to empty string if not found
+          const levelText = proficiencyMap[skillLevel] ? ` (${proficiencyMap[skillLevel]})` : '';
+            
+          return (
+            <li
+              key={index}
+              className="skill-item"
+              style={{
+                background: 'transparent',
+                padding: 0,
+                fontSize: theme.bodySize || '10px',
+                color: theme.primary || '#000',
+              }}
+            >
+              {template?.theme?.bullet || '•'} {skillName}{levelText}
+            </li>
+          );
+        })}
       </ul>
     </section>
   )

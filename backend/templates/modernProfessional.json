@@ -1,0 +1,225 @@
+{
+  "name": "Modern Professional",
+  "version": "1.0.0",
+  "description": "Clean, modern template with a professional touch",
+  
+  "layout": "two_column",
+  
+  "sections": [
+    "contact",
+    "summary",
+    "skills",
+    "workExperience",
+    "education",
+    "projects",
+    "languages"
+  ],
+  
+  "styling": {
+    "fontFamily": "'Segoe UI', Arial, sans-serif",
+    "fontSize": {
+      "name": "28px",
+      "sectionTitle": "18px",
+      "body": "14px"
+    },
+    "margins": {
+      "top": "0.75in",
+      "bottom": "0.75in",
+      "left": "1in",
+      "right": "1in"
+    },
+    "lineHeight": "1.5",
+    "colors": {
+      "primary": "#2c3e50",
+      "secondary": "#7f8c8d",
+      "accent": "#2980b9"
+    }
+  },
+  
+  "sectionConfig": {
+    "contact": {
+      "required": true,
+      "fields": ["name", "email", "phone", "location"],
+      "optionalFields": ["linkedin", "github", "website"],
+      "layout": "centered"
+    },
+    "summary": {
+      "required": false,
+      "maxLength": 250,
+      "format": "paragraph"
+    },
+    "skills": {
+      "required": true,
+      "maxItems": 20,
+      "categorize": true,
+      "categories": ["Technical", "Professional", "Tools & Technologies"],
+      "maxItemsPerCategory": 10,
+      "showProficiency": true,
+      "proficiencyLevels": ["Expert", "Advanced", "Intermediate", "Beginner"],
+      "proficiencyScale": 5,
+      "showIcons": true,
+      "groupByProficiency": true,
+      "skills": [
+        {
+          "name": "Project Management",
+          "category": "Professional",
+          "proficiency": 4,
+          "icon": "project-diagram"
+        },
+        {
+          "name": "Team Leadership",
+          "category": "Professional",
+          "proficiency": 5,
+          "icon": "users"
+        },
+        {
+          "name": "JavaScript",
+          "category": "Technical",
+          "proficiency": 4,
+          "icon": "js"
+        },
+        {
+          "name": "React",
+          "category": "Technical",
+          "proficiency": 4,
+          "icon": "react"
+        },
+        {
+          "name": "Node.js",
+          "category": "Technical",
+          "proficiency": 4,
+          "icon": "node"
+        },
+        {
+          "name": "Communication",
+          "category": "Professional",
+          "proficiency": 5,
+          "icon": "comments"
+        },
+        {
+          "name": "Git",
+          "category": "Tools & Technologies",
+          "proficiency": 4,
+          "icon": "git"
+        },
+        {
+          "name": "Docker",
+          "category": "Tools & Technologies",
+          "proficiency": 3,
+          "icon": "docker"
+        },
+        {
+          "name": "Agile/Scrum",
+          "category": "Professional",
+          "proficiency": 4,
+          "icon": "tasks"
+        },
+        {
+          "name": "Problem Solving",
+          "category": "Professional",
+          "proficiency": 5,
+          "icon": "lightbulb"
+        }
+      ]
+    },
+    "workExperience": {
+      "required": true,
+      "maxItems": 5,
+      "showDuration": true,
+      "showLocation": true,
+      "showTechnologies": true,
+      "showAchievements": true,
+      "fields": [
+        "company",
+        "position",
+        "startDate",
+        "endDate",
+        "location",
+        "description",
+        "technologies",
+        "achievements"
+      ]
+    },
+    "internships": {
+      "required": true,
+      "maxItems": 3,
+      "showDuration": true,
+      "showTechnologies": true,
+      "includeLocation": true,
+      "includeMentor": true,
+      "fields": [
+        "company",
+        "position",
+        "startDate",
+        "endDate",
+        "location",
+        "description",
+        "technologies",
+        "achievements",
+        "mentor"
+      ]
+    },
+    "education": {
+      "required": true,
+      "showGPA": true,
+      "showDates": true,
+      "includeRelevantCoursework": true,
+      "maxCoursesToShow": 6,
+      "fields": [
+        "institution",
+        "degree",
+        "fieldOfStudy",
+        "startDate",
+        "endDate",
+        "gpa",
+        "honors",
+        "thesis",
+        "relevantCoursework"
+      ]
+    },
+    "projects": {
+      "required": true,
+      "maxItems": 5,
+      "showLinks": true,
+      "showTechnologies": true,
+      "showTimeframe": true,
+      "showTeamSize": true,
+      "fields": [
+        "name",
+        "description",
+        "technologies",
+        "startDate",
+        "endDate",
+        "url",
+        "github",
+        "role",
+        "teamSize",
+        "keyAchievements",
+        "challenges"
+      ]
+    },
+    "languages": {
+      "required": false,
+      "showProficiency": true,
+      "proficiencyLevels": ["Native", "Fluent", "Professional Working", "Limited Working", "Elementary"],
+      "maxItems": 5
+    }
+  },
+  
+  "ats": {
+    "friendly": true,
+    "noImages": true,
+    "noTables": true,
+    "noColumns": false,
+    "standardFonts": true,
+    "parseableDates": true,
+    "keywordOptimized": true
+  },
+  
+  "formatting": {
+    "sectionDivider": "line",
+    "bulletStyle": "•",
+    "dateFormat": "MMM YYYY",
+    "phoneFormat": "+XX XXX XXX XXXX"
+  }
+}
