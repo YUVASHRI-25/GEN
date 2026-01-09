@@ -10,6 +10,7 @@ import GetStarted from './pages/GetStarted'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Builder from './pages/Builder'
+import TemplateSelection from './pages/TemplateSelection'
 
 function App() {
   return (
@@ -37,6 +38,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Builder />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/templates" 
+                element={
+                  <ProtectedRoute>
+                    <TemplateSelection />
                   </ProtectedRoute>
                 } 
               />

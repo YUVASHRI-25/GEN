@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useResume } from '../../context/ResumeContext'
 import { saveResume } from '../../api/resumeApi'
+import { resumeAPI } from '../../services/api'
 
 function Projects() {
   const { resumeData, addProject, removeProject } = useResume()
@@ -12,12 +13,48 @@ function Projects() {
     description: '',
     link: ''
   })
+  const [enhancing, setEnhancing] = useState(false)
+  const [error, setError] = useState('')
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     })
+  }
+
+  const handleEnhanceDescription = async () => {
+    if (!formData.description || formData.description.trim().length < 10) {
+      setError('Please add a basic description first (at least 10 characters)')
+      return
+    }
+
+    setEnhancing(true)
+    setError('')
+
+    try {
+      const response = await resumeAPI.enhanceProjectDescription({
+        description: formData.description,
+        projectName: formData.name,
+        technologies: formData.technologies
+      })
+
+      if (response.success && response.enhancedDescription) {
+        setFormData({
+          ...formData,
+          description: response.enhancedDescription
+        })
+        setError('') // Clear any previous errors on success
+      } else {
+        setError('Could not enhance description. Your current description looks good!')
+      }
+    } catch (err) {
+      console.error('Enhancement error:', err)
+      // Provide a helpful fallback message
+      setError('💡 AI service unavailable. Try refining your description by adding specific details about technologies used, features implemented, or problems solved.')
+    } finally {
+      setEnhancing(false)
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -48,15 +85,23 @@ function Projects() {
         achievements: []
       }
       
-      // Add project to the state
+      console.log('Adding project:', newProject)
+      console.log('Current projects before add:', resumeData.projects)
+      
+      // Add project to the state - this will immediately update the preview
       addProject(newProject)
       
-      // Save all projects including the new one
-      await handleSaveAll()
+      // Log after add (note: state may not be updated immediately due to React batching)
+      setTimeout(() => {
+        console.log('Projects after add (delayed):', resumeData.projects)
+      }, 100)
       
       // Reset form and hide it
       setFormData({ name: '', technologies: '', duration: '', description: '', link: '' })
       setShowForm(false)
+      
+      // Note: The project is now saved to localStorage via the context automatically
+      // No need to call handleSaveAll here as it was causing timing issues
     } catch (error) {
       console.error('Error saving project:', error)
       alert('Failed to save project. Please try again.')
@@ -205,6 +250,20 @@ function Projects() {
               placeholder="Describe what you built and what you learned...&#10;e.g., Built a full-stack e-commerce website with user authentication and payment integration."
               rows={4}
             />
+            <div className="ai-enhance-section">
+              <button
+                type="button"
+                className="ai-enhance-btn"
+                onClick={handleEnhanceDescription}
+                disabled={enhancing || !formData.description || formData.description.trim().length < 10}
+              >
+                {enhancing ? '⏳ Enhancing...' : '✨ Enhance with AI'}
+              </button>
+              {error && <p className="ai-error">{error}</p>}
+              {!formData.description && (
+                <p className="ai-hint">Add a basic description first to use AI enhancement</p>
+              )}
+            </div>
           </div>
 
           <div className="form-group">
@@ -217,6 +276,16 @@ function Projects() {
               onChange={handleChange}
               placeholder="e.g., https://github.com/username/project"
             />
+          </div>
+
+          <div className="description-tips">
+            <strong>💡 Writing Tips:</strong>
+            <ul>
+              <li>Start with an action verb (Built, Developed, Created)</li>
+              <li>Mention specific technologies used</li>
+              <li>Include key features or functionality</li>
+              <li>Add measurable results if possible (users, performance)</li>
+            </ul>
           </div>
 
           <div className="entry-form-buttons">
@@ -368,6 +437,74 @@ function Projects() {
         
         .tip-box strong {
           color: #667eea;
+        }
+
+        .ai-enhance-section {
+          margin-top: 8px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .ai-enhance-btn {
+          padding: 8px 16px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: all 0.3s ease;
+          align-self: flex-start;
+        }
+
+        .ai-enhance-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .ai-enhance-btn:disabled {
+          background: #a0aec0;
+          cursor: not-allowed;
+          opacity: 0.6;
+        }
+
+        .ai-error {
+          color: #e53e3e;
+          font-size: 13px;
+          margin: 0;
+        }
+
+        .ai-hint {
+          color: #718096;
+          font-size: 13px;
+          margin: 0;
+          font-style: italic;
+        }
+
+        .description-tips {
+          background: #f7fafc;
+          border-left: 3px solid #667eea;
+          padding: 12px 16px;
+          margin-top: 12px;
+          border-radius: 4px;
+          font-size: 13px;
+        }
+
+        .description-tips strong {
+          color: #667eea;
+          display: block;
+          margin-bottom: 8px;
+        }
+
+        .description-tips ul {
+          margin: 0;
+          padding-left: 20px;
+        }
+
+        .description-tips li {
+          margin: 4px 0;
+          color: #4a5568;
         }
       `}</style>
     </div>

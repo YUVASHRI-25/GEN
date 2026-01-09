@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useResume } from '../../context/ResumeContext'
+import { resumeAPI } from '../../services/api'
 
 function Internship() {
   const { resumeData, addInternship, removeInternship } = useResume()
@@ -10,12 +11,48 @@ function Internship() {
     duration: '',
     description: ''
   })
+  const [enhancing, setEnhancing] = useState(false)
+  const [error, setError] = useState('')
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     })
+  }
+
+  const handleEnhanceDescription = async () => {
+    if (!formData.description || formData.description.trim().length < 10) {
+      setError('Please add a basic description first (at least 10 characters)')
+      return
+    }
+
+    setEnhancing(true)
+    setError('')
+
+    try {
+      const response = await resumeAPI.enhanceInternshipDescription({
+        description: formData.description,
+        title: formData.title,
+        company: formData.company
+      })
+
+      if (response.success && response.enhancedDescription) {
+        setFormData({
+          ...formData,
+          description: response.enhancedDescription
+        })
+        setError('') // Clear any previous errors on success
+      } else {
+        setError('Could not enhance description. Your current description looks good!')
+      }
+    } catch (err) {
+      console.error('Enhancement error:', err)
+      // Provide a helpful fallback message
+      setError('💡 AI service unavailable. Try refining your description by using action verbs, mentioning specific technologies, and highlighting achievements.')
+    } finally {
+      setEnhancing(false)
+    }
   }
 
   const handleSubmit = (e) => {
@@ -123,6 +160,30 @@ function Internship() {
               placeholder="Describe your responsibilities and achievements...&#10;e.g., Built responsive web pages using HTML/CSS. Worked on a team project."
               rows={4}
             />
+            <div className="ai-enhance-section">
+              <button
+                type="button"
+                className="ai-enhance-btn"
+                onClick={handleEnhanceDescription}
+                disabled={enhancing || !formData.description || formData.description.trim().length < 10}
+              >
+                {enhancing ? '⏳ Enhancing...' : '✨ Enhance with AI'}
+              </button>
+              {error && <p className="ai-error">{error}</p>}
+              {!formData.description && (
+                <p className="ai-hint">Add a basic description first to use AI enhancement</p>
+              )}
+            </div>
+          </div>
+
+          <div className="description-tips">
+            <strong>💡 Writing Tips:</strong>
+            <ul>
+              <li>Use action verbs (Developed, Implemented, Collaborated)</li>
+              <li>Mention specific technologies and tools you used</li>
+              <li>Include quantifiable results (e.g., "improved by 20%")</li>
+              <li>Focus on your contributions and achievements</li>
+            </ul>
           </div>
 
           <div className="entry-form-buttons">
@@ -196,6 +257,74 @@ function Internship() {
         
         .no-experience-tip li {
           margin-bottom: 4px;
+        }
+
+        .ai-enhance-section {
+          margin-top: 8px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .ai-enhance-btn {
+          padding: 8px 16px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: all 0.3s ease;
+          align-self: flex-start;
+        }
+
+        .ai-enhance-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .ai-enhance-btn:disabled {
+          background: #a0aec0;
+          cursor: not-allowed;
+          opacity: 0.6;
+        }
+
+        .ai-error {
+          color: #e53e3e;
+          font-size: 13px;
+          margin: 0;
+        }
+
+        .ai-hint {
+          color: #718096;
+          font-size: 13px;
+          margin: 0;
+          font-style: italic;
+        }
+
+        .description-tips {
+          background: #f7fafc;
+          border-left: 3px solid #667eea;
+          padding: 12px 16px;
+          margin-top: 12px;
+          border-radius: 4px;
+          font-size: 13px;
+        }
+
+        .description-tips strong {
+          color: #667eea;
+          display: block;
+          margin-bottom: 8px;
+        }
+
+        .description-tips ul {
+          margin: 0;
+          padding-left: 20px;
+        }
+
+        .description-tips li {
+          margin: 4px 0;
+          color: #4a5568;
         }
       `}</style>
     </div>

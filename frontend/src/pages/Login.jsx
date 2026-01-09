@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { GoogleLogin } from '@react-oauth/google'
 import { useResume } from '../context/ResumeContext'
 import { authAPI } from '../services/api'
 import './Login.css'
@@ -16,6 +17,7 @@ function Login() {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [googleLoading, setGoogleLoading] = useState(false)
 
   const handleChange = (e) => {
     setFormData({
@@ -72,6 +74,29 @@ function Login() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Handle Google Sign-In
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError('')
+    setGoogleLoading(true)
+    
+    try {
+      const response = await authAPI.googleLogin(credentialResponse.credential)
+      
+      if (response.success) {
+        login(response.user, response.token)
+        navigate('/dashboard')
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Google login failed')
+    } finally {
+      setGoogleLoading(false)
+    }
+  }
+
+  const handleGoogleError = () => {
+    setError('Google Sign-In was unsuccessful. Please try again.')
   }
 
   // Demo login for easy testing
@@ -136,11 +161,32 @@ function Login() {
             <button 
               type="submit" 
               className="btn btn-primary login-btn"
-              disabled={loading}
+              disabled={loading || googleLoading}
             >
               {loading ? 'Please wait...' : (isRegister ? 'Create Account' : 'Login')}
             </button>
           </form>
+
+          <div className="login-divider">
+            <span>or continue with</span>
+          </div>
+
+          <div className="google-login-wrapper">
+            {googleLoading ? (
+              <div className="google-loading">Signing in with Google...</div>
+            ) : (
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
+                useOneTap
+                theme="outline"
+                size="large"
+                text="continue_with"
+                shape="rectangular"
+                width="100%"
+              />
+            )}
+          </div>
 
           <div className="login-divider">
             <span>or</span>

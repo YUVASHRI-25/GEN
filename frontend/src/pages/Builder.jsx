@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useResume } from '../context/ResumeContext'
 import { resumeAPI } from '../services/api'
 import ResumePreview from '../components/ResumePreview'
+import { TEMPLATES, DEFAULT_TEMPLATE_ID } from '../templates'
 
 // Builder Tab Components
 import Contact from './Builder/Contact'
@@ -27,7 +28,7 @@ const TABS = [
 ]
 
 function Builder() {
-  const { resumeData } = useResume()
+  const { resumeData, selectedTemplate, selectedTemplateData, setSelectedTemplate, setSelectedTemplateData } = useResume()
   const [activeTab, setActiveTab] = useState('contact')
   const [generating, setGenerating] = useState(false)
   const [generatedResume, setGeneratedResume] = useState(null)
@@ -45,6 +46,25 @@ function Builder() {
   const handleZoomReset = () => {
     setZoomLevel(1) // Reset to 100%
   }
+
+  // Ensure a template is loaded/selected
+  useEffect(() => {
+    if (!selectedTemplate) {
+      setSelectedTemplate(DEFAULT_TEMPLATE_ID)
+      const fallbackTemplate = TEMPLATES.find(t => t.id === DEFAULT_TEMPLATE_ID)
+      setSelectedTemplateData(fallbackTemplate || null)
+    } else if (!selectedTemplateData) {
+      const template = TEMPLATES.find(t => t.id === selectedTemplate)
+      if (template) {
+        setSelectedTemplateData(template)
+      }
+    }
+  }, [selectedTemplate, selectedTemplateData, setSelectedTemplate, setSelectedTemplateData])
+
+  const activeTemplate = useMemo(() => {
+    if (selectedTemplateData) return selectedTemplateData
+    return TEMPLATES.find(t => t.id === selectedTemplate) || TEMPLATES.find(t => t.id === DEFAULT_TEMPLATE_ID)
+  }, [selectedTemplateData, selectedTemplate])
 
   const currentTabIndex = TABS.findIndex(t => t.id === activeTab)
 
@@ -288,7 +308,7 @@ function Builder() {
               </button>
             </div>
           </div>
-          <ResumePreview zoomLevel={zoomLevel} />
+          <ResumePreview zoomLevel={zoomLevel} template={activeTemplate} />
         </div>
       </div>
     </div>

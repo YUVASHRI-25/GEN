@@ -47,7 +47,7 @@ Generate ONLY the summary text, no additional explanations.`;
     const response = await callLLM(prompt);
     return response;
   } catch (error) {
-    console.error('LLM Summary Error:', error.message);
+    console.log('AI enhancement unavailable, using fallback for summary');
     // Fallback: return a template summary
     return generateFallbackSummary(data);
   }
@@ -142,6 +142,157 @@ Return only the enhanced description (2-3 bullet points).`;
 };
 
 /**
+ * Enhance project description
+ */
+const enhanceProjectDescription = async (data) => {
+  const { description, projectName, technologies } = data;
+
+  const prompt = `You are an ATS resume formatter and career advisor.
+Enhance this project description for a student's resume.
+
+Project Name: ${projectName || 'Project'}
+Technologies: ${technologies || 'Not specified'}
+Current Description: ${description || 'Not provided'}
+
+Requirements:
+- Make it concise and impactful (2-3 sentences)
+- Use action verbs and quantifiable achievements if possible
+- Make it ATS-friendly with relevant keywords
+- Focus on what was built and the technologies used
+- Highlight problem-solving and technical skills
+
+Generate ONLY the enhanced description, no additional explanations or formatting.`;
+
+  try {
+    const response = await callLLM(prompt);
+    return response;
+  } catch (error) {
+    console.log('AI enhancement unavailable, using fallback for project description');
+    // Fallback: return a template description
+    return generateFallbackProjectDescription(data);
+  }
+};
+
+/**
+ * Enhance single internship description
+ */
+const enhanceInternshipDescription = async (data) => {
+  const { description, title, company } = data;
+
+  const prompt = `You are an ATS resume formatter and career advisor.
+Enhance this internship/experience description for a student's resume.
+
+Role: ${title || 'Intern'}
+Company: ${company || 'Company'}
+Current Description: ${description || 'Not provided'}
+
+Requirements:
+- Make it action-oriented and impactful (2-3 sentences)
+- Use strong action verbs (Developed, Implemented, Collaborated, etc.)
+- Include measurable outcomes where possible
+- Make it ATS-friendly with industry keywords
+- Focus on responsibilities and achievements
+- Emphasize skills and technologies used
+
+Generate ONLY the enhanced description, no additional explanations or formatting.`;
+
+  try {
+    const response = await callLLM(prompt);
+    return response;
+  } catch (error) {
+    console.log('AI enhancement unavailable, using fallback for internship description');
+    // Fallback: return a template description
+    return generateFallbackInternshipDescription(data);
+  }
+};
+
+/**
+ * Fallback project description generator (no LLM)
+ */
+const generateFallbackProjectDescription = (data) => {
+  const { projectName, technologies, description } = data;
+  const tech = technologies || 'modern technologies';
+  
+  if (description && description.trim().length > 10) {
+    return description; // Return original if it exists
+  }
+  
+  return `Developed ${projectName || 'a project'} using ${tech}. Implemented key features and functionalities to demonstrate practical application of technical skills. Enhanced problem-solving abilities through hands-on development experience.`;
+};
+
+/**
+ * Fallback internship description generator (no LLM)
+ */
+const generateFallbackInternshipDescription = (data) => {
+  const { title, company, description } = data;
+  const role = title || 'position';
+  const org = company || 'the organization';
+  
+  if (description && description.trim().length > 10) {
+    return description; // Return original if it exists
+  }
+  
+  return `Worked as ${role} at ${org}. Collaborated with team members on various projects and contributed to key deliverables. Gained practical experience in industry-standard tools and methodologies while developing professional skills.`;
+};
+
+/**
+ * Enhance custom section content
+ */
+const enhanceCustomContent = async (data) => {
+  const { content, title } = data;
+
+  const prompt = `You are an ATS resume formatter and career advisor.
+Enhance this custom section content for a student's resume.
+
+Section Title: ${title || 'Custom Section'}
+Current Content: ${content || 'Not provided'}
+
+Requirements:
+- Make it professional and concise (2-3 sentences or bullet-point style)
+- Use clear, impactful language
+- Make it relevant and appropriate for a resume
+- Focus on achievements, skills, or relevant information
+- Keep the tone professional yet engaging
+
+Generate ONLY the enhanced content, no additional explanations or formatting.`;
+
+  try {
+    const response = await callLLM(prompt);
+    return response;
+  } catch (error) {
+    console.log('AI enhancement unavailable, using fallback for custom content');
+    // Fallback: return a template content
+    return generateFallbackCustomContent(data);
+  }
+};
+
+/**
+ * Fallback custom content generator (no LLM)
+ */
+const generateFallbackCustomContent = (data) => {
+  const { title, content } = data;
+  
+  if (content && content.trim().length > 10) {
+    return content; // Return original if it exists
+  }
+  
+  // Generic fallback based on common section titles
+  if (title && title.toLowerCase().includes('hobby') || title?.toLowerCase().includes('interest')) {
+    return 'Passionate about continuous learning and exploring new technologies. Enjoy problem-solving challenges and staying updated with industry trends.';
+  }
+  
+  if (title && title.toLowerCase().includes('achievement')) {
+    return 'Consistently demonstrated strong academic performance and active participation in extracurricular activities. Recognized for dedication to personal and professional growth.';
+  }
+  
+  if (title && title.toLowerCase().includes('volunteer')) {
+    return 'Actively contributed to community service initiatives. Developed leadership and teamwork skills through collaborative volunteer projects.';
+  }
+  
+  return 'Demonstrated commitment to personal growth and professional development through various activities and experiences.';
+};
+
+/**
  * Call LLM API (Ollama/Local)
  */
 const callLLM = async (prompt) => {
@@ -164,13 +315,19 @@ const callLLM = async (prompt) => {
 
     return response.data.response?.trim() || '';
   } catch (ollamaError) {
-    console.log('Ollama not available, using fallback...');
+    console.log('Ollama not available, trying OpenAI fallback...');
     
-    // Fallback to OpenAI if configured
-    if (LLM_CONFIG.openaiKey) {
-      return await callOpenAI(prompt);
+    // Fallback to OpenAI if configured and valid
+    if (LLM_CONFIG.openaiKey && LLM_CONFIG.openaiKey !== 'your_openai_api_key_here') {
+      try {
+        return await callOpenAI(prompt);
+      } catch (openaiError) {
+        console.log('OpenAI also unavailable. Using template fallback.');
+        throw new Error('No LLM service available');
+      }
     }
     
+    console.log('No AI service configured. Using template fallback.');
     throw new Error('No LLM service available');
   }
 };
@@ -214,5 +371,8 @@ module.exports = {
   generateProfessionalSummary,
   enhanceResumeData,
   categorizeSkills,
-  enhanceInternshipDescriptions
+  enhanceInternshipDescriptions,
+  enhanceProjectDescription,
+  enhanceInternshipDescription,
+  enhanceCustomContent
 };

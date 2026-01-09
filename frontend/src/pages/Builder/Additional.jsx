@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useResume } from '../../context/ResumeContext'
+import { resumeAPI } from '../../services/api'
 
 function Additional() {
   const { resumeData, updateLanguages, addCustomSection, removeCustomSection } = useResume()
@@ -13,6 +14,8 @@ function Additional() {
     title: '',
     content: ''
   })
+  const [enhancing, setEnhancing] = useState(false)
+  const [error, setError] = useState('')
 
   // Proficiency levels
   const proficiencyLevels = ['Native', 'Fluent', 'Advanced', 'Intermediate', 'Basic']
@@ -35,6 +38,39 @@ function Additional() {
       ...customFormData,
       [e.target.name]: e.target.value
     })
+  }
+
+  const handleEnhanceCustomContent = async () => {
+    if (!customFormData.content || customFormData.content.trim().length < 10) {
+      setError('Please add some basic content first (at least 10 characters)')
+      return
+    }
+
+    setEnhancing(true)
+    setError('')
+
+    try {
+      const response = await resumeAPI.enhanceCustomContent({
+        content: customFormData.content,
+        title: customFormData.title
+      })
+
+      if (response.success && response.enhancedContent) {
+        setCustomFormData({
+          ...customFormData,
+          content: response.enhancedContent
+        })
+        setError('') // Clear any previous errors on success
+      } else {
+        setError('Could not enhance content. Your current content looks good!')
+      }
+    } catch (err) {
+      console.error('Enhancement error:', err)
+      // Provide a helpful fallback message
+      setError('💡 AI service unavailable. Try making your content more specific and professional.')
+    } finally {
+      setEnhancing(false)
+    }
   }
 
   const handleAddCustomSection = (e) => {
@@ -179,6 +215,30 @@ function Additional() {
                 rows={4}
                 required
               />
+              <div className="ai-enhance-section">
+                <button
+                  type="button"
+                  className="ai-enhance-btn"
+                  onClick={handleEnhanceCustomContent}
+                  disabled={enhancing || !customFormData.content || customFormData.content.trim().length < 10}
+                >
+                  {enhancing ? '⏳ Enhancing...' : '✨ Enhance with AI'}
+                </button>
+                {error && <p className="ai-error">{error}</p>}
+                {!customFormData.content && (
+                  <p className="ai-hint">Add some basic content first to use AI enhancement</p>
+                )}
+              </div>
+            </div>
+
+            <div className="content-tips">
+              <strong>💡 Writing Tips:</strong>
+              <ul>
+                <li>Be specific and relevant to your resume</li>
+                <li>Use professional language</li>
+                <li>Focus on achievements or skills</li>
+                <li>Keep it concise (2-3 sentences or bullet points)</li>
+              </ul>
             </div>
 
             <div className="entry-form-buttons">
@@ -415,6 +475,74 @@ function Additional() {
           border-color: #667eea;
           color: #667eea;
           background: #667eea08;
+        }
+
+        .ai-enhance-section {
+          margin-top: 8px;
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .ai-enhance-btn {
+          padding: 8px 16px;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: all 0.3s ease;
+          align-self: flex-start;
+        }
+
+        .ai-enhance-btn:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .ai-enhance-btn:disabled {
+          background: #a0aec0;
+          cursor: not-allowed;
+          opacity: 0.6;
+        }
+
+        .ai-error {
+          color: #e53e3e;
+          font-size: 13px;
+          margin: 0;
+        }
+
+        .ai-hint {
+          color: #718096;
+          font-size: 13px;
+          margin: 0;
+          font-style: italic;
+        }
+
+        .content-tips {
+          background: #f7fafc;
+          border-left: 3px solid #667eea;
+          padding: 12px 16px;
+          margin-top: 12px;
+          border-radius: 4px;
+          font-size: 13px;
+        }
+
+        .content-tips strong {
+          color: #667eea;
+          display: block;
+          margin-bottom: 8px;
+        }
+
+        .content-tips ul {
+          margin: 0;
+          padding-left: 20px;
+        }
+
+        .content-tips li {
+          margin: 4px 0;
+          color: #4a5568;
         }
         
         @media (max-width: 600px) {

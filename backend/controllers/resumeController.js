@@ -156,10 +156,90 @@ const downloadResume = async (req, res) => {
   }
 };
 
+/**
+ * Enhance project description using LLM
+ */
+const enhanceProjectDescription = async (req, res) => {
+  try {
+    const { description, projectName, technologies } = req.body;
+
+    const enhancedDescription = await llmService.enhanceProjectDescription({
+      description,
+      projectName,
+      technologies
+    });
+
+    res.json({
+      success: true,
+      enhancedDescription
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to enhance project description',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * Enhance internship description using LLM
+ */
+const enhanceInternshipDescription = async (req, res) => {
+  try {
+    const { description, title, company } = req.body;
+
+    const enhancedDescription = await llmService.enhanceInternshipDescription({
+      description,
+      title,
+      company
+    });
+
+    res.json({
+      success: true,
+      enhancedDescription
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to enhance internship description',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * Enhance custom section content using LLM
+ */
+const enhanceCustomContent = async (req, res) => {
+  try {
+    const { content, title } = req.body;
+
+    const enhancedContent = await llmService.enhanceCustomContent({
+      content,
+      title
+    });
+
+    res.json({
+      success: true,
+      enhancedContent
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to enhance custom content',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   saveResume,
   generateResume,
   previewResume,
   enhanceSummary,
+  enhanceProjectDescription,
+  enhanceInternshipDescription,
+  enhanceCustomContent,
   downloadResume
 };

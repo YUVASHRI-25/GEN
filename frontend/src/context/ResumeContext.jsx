@@ -21,6 +21,9 @@ const initialResumeData = {
   customSections: []
 }
 
+const TEMPLATE_STORAGE_KEY = 'selectedTemplate'
+const TEMPLATE_DATA_STORAGE_KEY = 'selectedTemplateData'
+
 // Create Context
 const ResumeContext = createContext()
 
@@ -33,6 +36,15 @@ export function ResumeProvider({ children }) {
   const [resumeData, setResumeData] = useState(() => {
     const saved = localStorage.getItem('resumeData')
     return saved ? JSON.parse(saved) : initialResumeData
+  })
+
+  // Template State
+  const [selectedTemplate, setSelectedTemplate] = useState(() => {
+    return localStorage.getItem(TEMPLATE_STORAGE_KEY) || null
+  })
+  const [selectedTemplateData, setSelectedTemplateData] = useState(() => {
+    const saved = localStorage.getItem(TEMPLATE_DATA_STORAGE_KEY)
+    return saved ? JSON.parse(saved) : null
   })
 
   // Auth State (simple version)
@@ -49,6 +61,23 @@ export function ResumeProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('resumeData', JSON.stringify(resumeData))
   }, [resumeData])
+
+  // Save template selection
+  useEffect(() => {
+    if (selectedTemplate) {
+      localStorage.setItem(TEMPLATE_STORAGE_KEY, selectedTemplate)
+    } else {
+      localStorage.removeItem(TEMPLATE_STORAGE_KEY)
+    }
+  }, [selectedTemplate])
+
+  useEffect(() => {
+    if (selectedTemplateData) {
+      localStorage.setItem(TEMPLATE_DATA_STORAGE_KEY, JSON.stringify(selectedTemplateData))
+    } else {
+      localStorage.removeItem(TEMPLATE_DATA_STORAGE_KEY)
+    }
+  }, [selectedTemplateData])
 
   // Update specific section of resume
   const updateResumeSection = (section, data) => {
@@ -173,6 +202,8 @@ export function ResumeProvider({ children }) {
   const resetResume = () => {
     setResumeData(initialResumeData)
     localStorage.removeItem('resumeData')
+    setSelectedTemplate(null)
+    setSelectedTemplateData(null)
   }
 
   // Auth functions
@@ -213,6 +244,12 @@ export function ResumeProvider({ children }) {
     addCustomSection,
     removeCustomSection,
     resetResume,
+
+    // Template selection
+    selectedTemplate,
+    setSelectedTemplate,
+    selectedTemplateData,
+    setSelectedTemplateData,
     
     // Auth data and functions
     user,

@@ -8,7 +8,7 @@ function Dashboard() {
 
   const handleStartFromScratch = () => {
     resetResume() // Clear any existing data
-    navigate('/builder')
+    navigate('/templates')
   }
 
   return (

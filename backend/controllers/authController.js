@@ -3,6 +3,11 @@
  * Handles user authentication (simple version for first-year students)
  */
 
+const { OAuth2Client } = require('google-auth-library');
+
+// Initialize Google OAuth client
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 // In-memory user storage (replace with database in production)
 const users = [];
 
@@ -18,6 +23,14 @@ const register = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Please provide username, email, and password'
+      });
+    }
+
+    // Validate email domain - only allow @bitsathy.ac.in
+    if (!email.endsWith('@bitsathy.ac.in')) {
+      return res.status(403).json({
+        success: false,
+        message: 'Only @bitsathy.ac.in email addresses are allowed'
       });
     }
 
@@ -125,8 +138,98 @@ const getMe = async (req, res) => {
   }
 };
 
+/**
+ * Google OAuth Login
+ * Verifies Google ID token and creates/logs in user
+ */
+const googleLogin = async (req, res) => {
+  try {
+    const { credential } = req.body;
+
+    if (!credential) {
+      return res.status(400).json({
+        success: false,
+        message: 'Google credential is required'
+      });
+    }
+
+    // Verify Google ID token on the backend (NEVER trust frontend data)
+    let payload;
+    try {
+      const ticket = await googleClient.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID
+      });
+      payload = ticket.getPayload();
+    } catch (verifyError) {
+      console.error('Google token verification failed:', verifyError.message);
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid Google token'
+      });
+    }
+
+    // Extract user info from verified token
+    const { sub: googleId, email, name, picture } = payload;
+
+    // Validate email domain - only allow @bitsathy.ac.in
+    if (!email.endsWith('@bitsathy.ac.in')) {
+      return res.status(403).json({
+        success: false,
+        message: 'Only @bitsathy.ac.in email addresses are allowed'
+      });
+    }
+
+    // Check if user exists (by email or Google ID)
+    let user = users.find(u => u.email === email || u.googleId === googleId);
+
+    if (user) {
+      // Update Google info if not already linked
+      if (!user.googleId) {
+        user.googleId = googleId;
+        user.picture = picture;
+      }
+    } else {
+      // Create new user
+      user = {
+        id: users.length + 1,
+        username: name,
+        email,
+        googleId,
+        picture,
+        password: null, // Google users don't have password
+        createdAt: new Date()
+      };
+      users.push(user);
+    }
+
+    // Generate JWT token
+    const token = Buffer.from(`${user.id}:${user.email}:${Date.now()}`).toString('base64');
+
+    res.json({
+      success: true,
+      message: 'Google login successful',
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        picture: user.picture
+      }
+    });
+  } catch (error) {
+    console.error('Google login error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Google login failed',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   register,
   login,
-  getMe
+  getMe,
+  googleLogin
 };

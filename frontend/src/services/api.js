@@ -49,6 +49,12 @@ export const authAPI = {
     return response.data
   },
 
+  // Google OAuth login
+  googleLogin: async (credential) => {
+    const response = await api.post('/auth/google', { credential })
+    return response.data
+  },
+
   // Get current user
   getMe: async () => {
     const response = await api.get('/auth/me')
@@ -74,6 +80,24 @@ export const resumeAPI = {
   // Enhance summary using LLM
   enhanceSummary: async (data) => {
     const response = await api.post('/resume/enhance-summary', data)
+    return response.data
+  },
+
+  // Enhance project description using LLM
+  enhanceProjectDescription: async (data) => {
+    const response = await api.post('/resume/enhance-project-description', data)
+    return response.data
+  },
+
+  // Enhance internship description using LLM
+  enhanceInternshipDescription: async (data) => {
+    const response = await api.post('/resume/enhance-internship-description', data)
+    return response.data
+  },
+
+  // Enhance custom section content using LLM
+  enhanceCustomContent: async (data) => {
+    const response = await api.post('/resume/enhance-custom-content', data)
     return response.data
   },
 
