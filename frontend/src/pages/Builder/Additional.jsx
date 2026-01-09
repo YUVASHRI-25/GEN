@@ -1,17 +1,15 @@
 import { useState, useEffect } from 'react'
 import { useResume } from '../../context/ResumeContext'
 import { resumeAPI } from '../../services/api'
-import { FiLink, FiTrash2, FiPlus } from 'react-icons/fi'
+import { FiTrash2 } from 'react-icons/fi'
 
 function Additional() {
   const { 
-  resumeData, 
-  updateLanguages, 
-  addCustomSection, 
-  removeCustomSection, 
-  addWebsite, 
-  removeWebsite 
-} = useResume()
+    resumeData, 
+    updateLanguages, 
+    addCustomSection, 
+    removeCustomSection 
+  } = useResume()
   
   // Language form state
   const [newLanguage, setNewLanguage] = useState({ name: '', proficiency: 'Intermediate' })
@@ -94,41 +92,6 @@ function Additional() {
   const commonLanguages = ['English', 'Hindi', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Bengali', 'Marathi']
     .filter(lang => !resumeData.languages.find(l => l.name === lang))
 
-  // Websites state
-  const [newWebsite, setNewWebsite] = useState({ title: '', url: '' })
-
-  // Handle website input change
-  const handleWebsiteChange = (e) => {
-    setNewWebsite({
-      ...newWebsite,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  // Add new website
-  const handleAddWebsite = (e) => {
-    e.preventDefault()
-    if (newWebsite.title.trim() && newWebsite.url.trim()) {
-      // Ensure URL has http/https
-      let url = newWebsite.url.trim()
-      if (!url.match(/^https?:\/\//i)) {
-        url = 'https://' + url
-      }
-      
-      addWebsite({
-        title: newWebsite.title.trim(),
-        url: url
-      })
-      setNewWebsite({ title: '', url: '' })
-    }
-  }
-
-  // Remove website
-  const handleRemoveWebsite = (index) => {
-    if (window.confirm('Are you sure you want to remove this website?')) {
-      removeWebsite(index)
-    }
-  }
 
   return (
     <div className="tab-section">
@@ -200,81 +163,6 @@ function Additional() {
         )}
       </div>
 
-      {/* Websites and Social Media */}
-      <div className="additional-section mt-8">
-        <h3> Websites and Social Media</h3>
-        <p className="text-sm text-gray-600 mb-4">Share your portfolio, blog, LinkedIn, or other related websites.</p>
-        
-        {resumeData.websites?.length > 0 && (
-          <div className="space-y-3 mb-4">
-            {resumeData.websites.map((website, index) => (
-              <div key={index} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
-                <div className="flex items-center">
-                  <FiLink className="text-blue-500 mr-2" />
-                  <a 
-                    href={website.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {website.title || 'Untitled'}
-                  </a>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveWebsite(index)}
-                  className="text-red-500 hover:text-red-700 p-1"
-                  title="Remove website"
-                >
-                  <FiTrash2 size={16} />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-        
-        <form onSubmit={handleAddWebsite} className="space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="form-group">
-              <label htmlFor="websiteTitle" className="block text-sm font-medium text-gray-700 mb-1">
-                Link title
-              </label>
-              <input
-                type="text"
-                id="websiteTitle"
-                name="title"
-                value={newWebsite.title}
-                onChange={handleWebsiteChange}
-                placeholder="e.g., My Portfolio"
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="websiteUrl" className="block text-sm font-medium text-gray-700 mb-1">
-                URL
-              </label>
-              <div className="flex">
-                <input
-                  type="url"
-                  id="websiteUrl"
-                  name="url"
-                  value={newWebsite.url}
-                  onChange={handleWebsiteChange}
-                  placeholder="e.g., example.com"
-                  className="flex-1 p-2 border border-gray-300 rounded-l-md focus:ring-blue-500 focus:border-blue-500"
-                />
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                  title="Add website"
-                >
-                  <FiPlus size={20} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </form>
-      </div>
 
       {/* Custom Sections */}
       <div className="additional-section">
