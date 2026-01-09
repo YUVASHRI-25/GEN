@@ -40,7 +40,33 @@
     "contact": {
       "required": true,
       "fields": ["name", "email", "phone"],
-      "optionalFields": ["linkedin", "address", "portfolio"],
+      "optionalFields": ["linkedin", "github", "leetcode", "portfolio", "address"],
+      "socialProfiles": [
+        {
+          "name": "LinkedIn",
+          "field": "linkedin",
+          "icon": "linkedin",
+          "placeholder": "linkedin.com/in/username"
+        },
+        {
+          "name": "GitHub",
+          "field": "github",
+          "icon": "github",
+          "placeholder": "github.com/username"
+        },
+        {
+          "name": "LeetCode",
+          "field": "leetcode",
+          "icon": "code",
+          "placeholder": "leetcode.com/username"
+        },
+        {
+          "name": "Portfolio",
+          "field": "portfolio",
+          "icon": "globe",
+          "placeholder": "yourwebsite.com"
+        }
+      ],
       "layout": "centered"
     },
     "professionalSummary": {
@@ -261,6 +287,17 @@
         "url"
       ]
     }
+  },
+  
+  "socialIcons": {
+    "github": "github",
+    "linkedin": "linkedin",
+    "leetcode": "code",
+    "portfolio": "globe",
+    "email": "mail",
+    "phone": "phone",
+    "location": "map-pin",
+    "address": "map-pin"
   },
   
   "ats": {

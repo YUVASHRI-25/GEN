@@ -41,9 +41,29 @@
   "sectionConfig": {
     "contact": {
       "required": true,
-      "fields": ["name", "email", "phone"],
-      "optionalFields": ["linkedin", "github", "location"],
-      "layout": "centered"
+      "fields": ["name", "email", "phone", "location"],
+      "optionalFields": ["linkedin", "github", "leetcode"],
+      "socialProfiles": [
+        {
+          "name": "LinkedIn",
+          "field": "linkedin",
+          "icon": "linkedin",
+          "placeholder": "linkedin.com/in/username"
+        },
+        {
+          "name": "GitHub",
+          "field": "github",
+          "icon": "github",
+          "placeholder": "github.com/username"
+        },
+        {
+          "name": "LeetCode",
+          "field": "leetcode",
+          "icon": "code",
+          "placeholder": "leetcode.com/username"
+        }
+      ],
+      "layout": "left"
     },
     "summary": {
       "required": false,

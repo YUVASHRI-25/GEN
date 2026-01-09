@@ -18,7 +18,8 @@ const initialResumeData = {
   certificates: [],
   summary: '',
   languages: [],
-  customSections: []
+  customSections: [],
+  websites: []
 }
 
 const TEMPLATE_STORAGE_KEY = 'selectedTemplate'
@@ -181,10 +182,24 @@ export function ResumeProvider({ children }) {
 
   // Add custom section
   const addCustomSection = (section) => {
-    setResumeData(prev => ({
-      ...prev,
-      customSections: [...prev.customSections, section]
-    }))
+    updateResumeSection('customSections', [...resumeData.customSections, section])
+  }
+
+  // Add website
+  const addWebsite = (website) => {
+    updateResumeSection('websites', [...resumeData.websites, website])
+  }
+
+  // Update website
+  const updateWebsite = (index, updatedWebsite) => {
+    const updatedWebsites = [...resumeData.websites]
+    updatedWebsites[index] = updatedWebsite
+    updateResumeSection('websites', updatedWebsites)
+  }
+
+  // Remove website
+  const removeWebsite = (index) => {
+    updateResumeSection('websites', resumeData.websites.filter((_, i) => i !== index))
   }
 
   // Remove custom section
@@ -228,6 +243,9 @@ export function ResumeProvider({ children }) {
     updateResumeSection,
     updateContact,
     updateSkills,
+    addWebsite,
+    updateWebsite,
+    removeWebsite,
     addEducation,
     updateEducation,
     removeEducation,

@@ -103,6 +103,18 @@ function Contact() {
         />
       </div>
 
+      <div className="form-group">
+        <label htmlFor="leetcode">LeetCode Profile (optional)</label>
+        <input
+          type="url"
+          id="leetcode"
+          name="leetcode"
+          value={contact.leetcode || ''}
+          onChange={handleChange}
+          placeholder="e.g., leetcode.com/username"
+        />
+      </div>
+
       <div className="tip-box">
         <strong>💡 Tip:</strong> Use a professional email address. 
         Avoid nicknames or numbers that don't look professional.

@@ -40,7 +40,51 @@
     "contact": {
       "required": true,
       "fields": ["name", "email", "phone"],
-      "optionalFields": ["website", "linkedin", "github", "behance", "dribbble", "instagram"],
+      "optionalFields": ["website", "linkedin", "github", "leetcode", "behance", "dribbble", "instagram"],
+      "socialProfiles": [
+        {
+          "name": "Website",
+          "field": "website",
+          "icon": "globe",
+          "placeholder": "yourwebsite.com"
+        },
+        {
+          "name": "LinkedIn",
+          "field": "linkedin",
+          "icon": "linkedin",
+          "placeholder": "linkedin.com/in/username"
+        },
+        {
+          "name": "GitHub",
+          "field": "github",
+          "icon": "github",
+          "placeholder": "github.com/username"
+        },
+        {
+          "name": "LeetCode",
+          "field": "leetcode",
+          "icon": "code",
+          "placeholder": "leetcode.com/username"
+        },
+        {
+          "name": "Behance",
+          "field": "behance",
+          "icon": "behance",
+          "placeholder": "behance.net/username"
+        },
+        {
+          "name": "Dribbble",
+          "field": "dribbble",
+          "icon": "dribbble",
+          "placeholder": "dribbble.com/username"
+        },
+        {
+          "name": "Instagram",
+          "field": "instagram",
+          "icon": "instagram",
+          "placeholder": "instagram.com/username"
+        }
+      ],
       "layout": "left"
     },
     "portfolio": {
@@ -192,6 +236,18 @@
     "standardFonts": true,
     "parseableDates": true,
     "keywordOptimized": true
+  },
+  
+  "socialIcons": {
+    "github": "github",
+    "linkedin": "linkedin",
+    "leetcode": "code",
+    "website": "globe",
+    "behance": "behance",
+    "dribbble": "dribbble",
+    "instagram": "instagram",
+    "email": "mail",
+    "phone": "phone"
   },
   
   "formatting": {

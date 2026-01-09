@@ -40,7 +40,33 @@
     "contact": {
       "required": true,
       "fields": ["name", "email", "phone"],
-      "optionalFields": ["github", "linkedin", "portfolio", "location"],
+      "optionalFields": ["github", "linkedin", "leetcode", "portfolio", "location"],
+      "socialProfiles": [
+        {
+          "name": "GitHub",
+          "field": "github",
+          "icon": "github",
+          "placeholder": "github.com/username"
+        },
+        {
+          "name": "LinkedIn",
+          "field": "linkedin",
+          "icon": "linkedin",
+          "placeholder": "linkedin.com/in/username"
+        },
+        {
+          "name": "LeetCode",
+          "field": "leetcode",
+          "icon": "code",
+          "placeholder": "leetcode.com/username"
+        },
+        {
+          "name": "Portfolio",
+          "field": "portfolio",
+          "icon": "globe",
+          "placeholder": "yourwebsite.com"
+        }
+      ],
       "layout": "left"
     },
     "summary": {
@@ -56,6 +82,15 @@
       "proficiencyLevels": ["Expert", "Advanced", "Intermediate", "Beginner"],
       "proficiencyScale": 5,
       "showIcons": true,
+      "socialIcons": {
+        "github": "github",
+        "linkedin": "linkedin",
+        "leetcode": "code",
+        "portfolio": "globe",
+        "email": "mail",
+        "phone": "phone",
+        "location": "map-pin"
+      },
       "groupByProficiency": true,
       "skills": [
         {

@@ -74,11 +74,53 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
   }
 
   const renderContact = () => {
-    const contactBits = [
-      contact.email,
-      contact.phone,
-      contact.location || contact.linkedin || contact.github
-    ].filter(Boolean)
+    // Define basic contact fields (email, phone, location)
+    const basicContactFields = [
+      { 
+        key: 'email', 
+        label: contact.email,
+        url: contact.email ? `mailto:${contact.email}` : null
+      },
+      { 
+        key: 'phone', 
+        label: contact.phone,
+        url: contact.phone ? `tel:${contact.phone.replace(/[^0-9+]/g, '')}` : null
+      },
+      { 
+        key: 'location', 
+        label: contact.location 
+      },
+    ].filter(item => item.label);
+
+    // Define social/website links
+    const socialLinks = [
+      { 
+        key: 'linkedin', 
+        url: contact.linkedin ? (contact.linkedin.startsWith('http') ? contact.linkedin : `https://${contact.linkedin}`) : null
+      },
+      { 
+        key: 'github', 
+        url: contact.github ? (contact.github.startsWith('http') ? contact.github : `https://${contact.github}`) : null
+      },
+      { 
+        key: 'leetcode', 
+        url: contact.leetcode ? (contact.leetcode.startsWith('http') ? contact.leetcode : `https://${contact.leetcode}`) : null
+      },
+      { 
+        key: 'portfolio', 
+        url: contact.portfolio ? (contact.portfolio.startsWith('http') ? contact.portfolio : `https://${contact.portfolio}`) : null
+      },
+      { 
+        key: 'website', 
+        url: contact.website ? (contact.website.startsWith('http') ? contact.website : `https://${contact.website}`) : null
+      },
+    ].filter(item => item.url);
+
+    // Add isLast flag to basic contact items
+    const contactItems = basicContactFields.map((item, index) => ({
+      ...item,
+      isLast: index === basicContactFields.length - 1
+    }));
 
     return (
       <header
@@ -97,6 +139,7 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
             fontWeight: theme.weightBold || 700,
             textTransform: 'uppercase',
             color: theme.primary || '#000',
+            marginBottom: '4px',
           }}
         >
           {contact.name || 'Your Name'}
@@ -107,7 +150,8 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
             style={{
               fontSize: theme.jobSize || '12px',
               color: theme.secondary || '#555',
-              marginBottom: '8px',
+              marginBottom: '12px',
+              fontWeight: 500,
             }}
           >
             {contact.jobTitle}
@@ -118,18 +162,73 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
           style={{
             fontSize: theme.bodySize || '10px',
             color: theme.secondary || '#333',
-            gap: '8px',
-            justifyContent: 'center',
             display: 'flex',
-            flexWrap: 'wrap'
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: '8px 12px',
+            alignItems: 'center',
           }}
         >
-          {contactBits.map((item, idx) => (
-            <span key={idx}>
-              {item}
-              {idx < contactBits.length - 1 ? ' | ' : ''}
-            </span>
+          {contactItems.map((item, idx) => (
+            <div key={item.key}>
+              {item.url ? (
+                <a 
+                  href={item.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  style={{
+                    color: theme.accent || '#2563eb',
+                    textDecoration: 'none',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <span>{item.label}</span>
+              )}
+              {!item.isLast && (
+                <span style={{ color: '#ccc', marginLeft: '8px' }}>•</span>
+              )}
+            </div>
           ))}
+          
+          {/* Social Links Section */}
+          {socialLinks.length > 0 && (
+            <div style={{ width: '100%', marginTop: '8px' }}>
+              <div style={{ 
+                fontSize: theme.bodySize || '10px',
+                fontWeight: 600,
+                color: theme.primary || '#000',
+                marginBottom: '4px'
+              }}>
+                WEBSITES & SOCIAL LINKS:
+              </div>
+              <div style={{ 
+                display: 'flex', 
+                flexWrap: 'wrap',
+                gap: '8px 12px',
+                justifyContent: 'center'
+              }}>
+                {socialLinks.map((item) => (
+                  <a
+                    key={item.key}
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-block',
+                      color: theme.accent || '#2563eb',
+                      textDecoration: 'none',
+                      fontSize: theme.bodySize || '10px',
+                    }}
+                  >
+                    {item.url.replace(/^https?:\/\//, '')}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </header>
     )
