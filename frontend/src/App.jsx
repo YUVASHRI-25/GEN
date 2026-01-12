@@ -11,6 +11,8 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Builder from './pages/Builder'
 import TemplateSelection from './pages/TemplateSelection'
+import UploadResume from './pages/UploadResume'
+import ResumeEditor from './pages/ResumeEditor'
 
 function App() {
   return (
@@ -23,31 +25,33 @@ function App() {
               {/* Public Routes */}
               <Route path="/" element={<GetStarted />} />
               <Route path="/login" element={<Login />} />
-              
+              <Route path="/upload-resume" element={<UploadResume />} />
+              <Route path="/resume-editor" element={<ResumeEditor />} />
+
               {/* Protected Routes */}
-              <Route 
-                path="/dashboard" 
+              <Route
+                path="/dashboard"
                 element={
                   <ProtectedRoute>
                     <Dashboard />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/builder" 
+              <Route
+                path="/builder"
                 element={
                   <ProtectedRoute>
                     <Builder />
                   </ProtectedRoute>
-                } 
+                }
               />
-              <Route 
-                path="/templates" 
+              <Route
+                path="/templates"
                 element={
                   <ProtectedRoute>
                     <TemplateSelection />
                   </ProtectedRoute>
-                } 
+                }
               />
             </Routes>
           </main>

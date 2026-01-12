@@ -11,8 +11,24 @@ const api = axios.create({
   }
 })
 
+// Create axios instance for file uploads
+const uploadApi = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'multipart/form-data'
+  }
+})
+
 // Add auth token to requests
 api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
+uploadApi.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
@@ -106,6 +122,48 @@ export const resumeAPI = {
     const response = await api.get(`/resume/download/${id}?format=${format}`, {
       responseType: 'blob'
     })
+    return response.data
+  },
+
+  // ============ NEW UPLOAD & EDIT ENDPOINTS ============
+
+  // Upload and parse resume file
+  uploadResume: async (file) => {
+    const formData = new FormData()
+    formData.append('resume', file)
+    const response = await uploadApi.post('/resume/upload', formData)
+    return response.data
+  },
+
+  // Enhance content with AI
+  enhanceContent: async (data) => {
+    const response = await api.post('/resume/enhance', data)
+    return response.data
+  },
+
+  // Batch enhance multiple sections
+  enhanceBatch: async (sections) => {
+    const response = await api.post('/resume/enhance-batch', { sections })
+    return response.data
+  },
+
+  // Get available templates
+  getTemplates: async () => {
+    const response = await api.get('/resume/templates')
+    return response.data
+  },
+
+  // Download PDF with selected template
+  downloadPDF: async (data) => {
+    const response = await api.post('/resume/download-pdf', data, {
+      responseType: 'blob'
+    })
+    return response.data
+  },
+
+  // Preview PDF configuration
+  previewPDF: async (data) => {
+    const response = await api.post('/resume/preview-pdf', data)
     return response.data
   }
 }

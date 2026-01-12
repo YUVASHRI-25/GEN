@@ -147,15 +147,15 @@
   .dashboard-cards {
     grid-template-columns: 1fr;
   }
-  
+
   .info-section ul {
     grid-template-columns: 1fr;
   }
-  
+
   .tips-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .welcome-section h1 {
     font-size: 26px;
   }

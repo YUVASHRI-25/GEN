@@ -1,15 +1,21 @@
 /**
  * Auth Controller
- * Handles user authentication (simple version for first-year students)
+ * Handles user authentication with MongoDB
  */
 
 const { OAuth2Client } = require('google-auth-library');
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
 
 // Initialize Google OAuth client
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-// In-memory user storage (replace with database in production)
-const users = [];
+// Generate JWT token
+const generateToken = (userId) => {
+  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+    expiresIn: '7d'
+  });
+};
 
 /**
  * Register a new user
@@ -35,7 +41,7 @@ const register = async (req, res) => {
     }
 
     // Check if user already exists
-    const existingUser = users.find(u => u.email === email);
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
         success: false,
@@ -43,27 +49,29 @@ const register = async (req, res) => {
       });
     }
 
-    // Create new user (in production, hash the password!)
-    const newUser = {
-      id: users.length + 1,
-      username,
+    // Create new user
+    const newUser = await User.create({
+      name: username,
       email,
-      password, // Note: In production, use bcrypt to hash passwords
-      createdAt: new Date()
-    };
+      password,
+      provider: 'local'
+    });
 
-    users.push(newUser);
+    // Generate token
+    const token = generateToken(newUser._id);
 
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
+      token,
       user: {
-        id: newUser.id,
-        username: newUser.username,
+        id: newUser._id,
+        username: newUser.name,
         email: newUser.email
       }
     });
   } catch (error) {
+    console.error('Registration error:', error);
     res.status(500).json({
       success: false,
       message: 'Registration failed',
@@ -87,8 +95,8 @@ const login = async (req, res) => {
       });
     }
 
-    // Find user
-    const user = users.find(u => u.email === email && u.password === password);
+    // Find user with password field
+    const user = await User.findOne({ email }).select('+password');
 
     if (!user) {
       return res.status(401).json({
@@ -97,20 +105,30 @@ const login = async (req, res) => {
       });
     }
 
-    // Generate simple token (in production, use JWT)
-    const token = Buffer.from(`${user.id}:${user.email}:${Date.now()}`).toString('base64');
+    // Check password
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password'
+      });
+    }
+
+    // Generate JWT token
+    const token = generateToken(user._id);
 
     res.json({
       success: true,
       message: 'Login successful',
       token,
       user: {
-        id: user.id,
-        username: user.username,
+        id: user._id,
+        username: user.name,
         email: user.email
       }
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({
       success: false,
       message: 'Login failed',
@@ -124,12 +142,27 @@ const login = async (req, res) => {
  */
 const getMe = async (req, res) => {
   try {
-    // In production, extract user from JWT token
+    const user = await User.findById(req.user.id).populate('resumes');
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
     res.json({
       success: true,
-      user: req.user || { message: 'Implement token verification' }
+      user: {
+        id: user._id,
+        username: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        resumes: user.resumes
+      }
     });
   } catch (error) {
+    console.error('Get user error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to get user',
@@ -181,40 +214,39 @@ const googleLogin = async (req, res) => {
     }
 
     // Check if user exists (by email or Google ID)
-    let user = users.find(u => u.email === email || u.googleId === googleId);
+    let user = await User.findOne({ $or: [{ email }, { googleId }] });
 
     if (user) {
       // Update Google info if not already linked
       if (!user.googleId) {
         user.googleId = googleId;
-        user.picture = picture;
+        user.avatar = picture;
+        user.provider = 'google';
+        await user.save();
       }
     } else {
       // Create new user
-      user = {
-        id: users.length + 1,
-        username: name,
+      user = await User.create({
+        name,
         email,
         googleId,
-        picture,
-        password: null, // Google users don't have password
-        createdAt: new Date()
-      };
-      users.push(user);
+        avatar: picture,
+        provider: 'google'
+      });
     }
 
     // Generate JWT token
-    const token = Buffer.from(`${user.id}:${user.email}:${Date.now()}`).toString('base64');
+    const token = generateToken(user._id);
 
     res.json({
       success: true,
       message: 'Google login successful',
       token,
       user: {
-        id: user.id,
-        username: user.username,
+        id: user._id,
+        username: user.name,
         email: user.email,
-        picture: user.picture
+        picture: user.avatar
       }
     });
   } catch (error) {

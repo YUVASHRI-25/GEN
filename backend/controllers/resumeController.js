@@ -17,11 +17,11 @@ const pdfGenerator = require('../utils/pdfGenerator');
 const saveResume = async (req, res) => {
   try {
     const resumeData = req.body;
-    
+
     // In a real application, you would save this to a database
     // For now, we'll just log and return success
     console.log('📝 Saving resume data:', resumeData);
-    
+
     res.json({
       success: true,
       message: 'Resume data saved successfully',

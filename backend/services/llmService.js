@@ -15,7 +15,7 @@ const LLM_CONFIG = {
   // Ollama (Local LLaMA/Mistral)
   ollamaUrl: process.env.OLLAMA_URL || 'http://localhost:11434',
   model: process.env.LLM_MODEL || 'mistral', // or 'llama2', 'llama3'
-  
+
   // Alternative: OpenAI API
   openaiUrl: 'https://api.openai.com/v1/chat/completions',
   openaiKey: process.env.OPENAI_API_KEY
@@ -212,11 +212,11 @@ Generate ONLY the enhanced description, no additional explanations or formatting
 const generateFallbackProjectDescription = (data) => {
   const { projectName, technologies, description } = data;
   const tech = technologies || 'modern technologies';
-  
+
   if (description && description.trim().length > 10) {
     return description; // Return original if it exists
   }
-  
+
   return `Developed ${projectName || 'a project'} using ${tech}. Implemented key features and functionalities to demonstrate practical application of technical skills. Enhanced problem-solving abilities through hands-on development experience.`;
 };
 
@@ -227,11 +227,11 @@ const generateFallbackInternshipDescription = (data) => {
   const { title, company, description } = data;
   const role = title || 'position';
   const org = company || 'the organization';
-  
+
   if (description && description.trim().length > 10) {
     return description; // Return original if it exists
   }
-  
+
   return `Worked as ${role} at ${org}. Collaborated with team members on various projects and contributed to key deliverables. Gained practical experience in industry-standard tools and methodologies while developing professional skills.`;
 };
 
@@ -271,24 +271,24 @@ Generate ONLY the enhanced content, no additional explanations or formatting.`;
  */
 const generateFallbackCustomContent = (data) => {
   const { title, content } = data;
-  
+
   if (content && content.trim().length > 10) {
     return content; // Return original if it exists
   }
-  
+
   // Generic fallback based on common section titles
   if (title && title.toLowerCase().includes('hobby') || title?.toLowerCase().includes('interest')) {
     return 'Passionate about continuous learning and exploring new technologies. Enjoy problem-solving challenges and staying updated with industry trends.';
   }
-  
+
   if (title && title.toLowerCase().includes('achievement')) {
     return 'Consistently demonstrated strong academic performance and active participation in extracurricular activities. Recognized for dedication to personal and professional growth.';
   }
-  
+
   if (title && title.toLowerCase().includes('volunteer')) {
     return 'Actively contributed to community service initiatives. Developed leadership and teamwork skills through collaborative volunteer projects.';
   }
-  
+
   return 'Demonstrated commitment to personal growth and professional development through various activities and experiences.';
 };
 
@@ -316,7 +316,7 @@ const callLLM = async (prompt) => {
     return response.data.response?.trim() || '';
   } catch (ollamaError) {
     console.log('Ollama not available, trying OpenAI fallback...');
-    
+
     // Fallback to OpenAI if configured and valid
     if (LLM_CONFIG.openaiKey && LLM_CONFIG.openaiKey !== 'your_openai_api_key_here') {
       try {
@@ -326,7 +326,7 @@ const callLLM = async (prompt) => {
         throw new Error('No LLM service available');
       }
     }
-    
+
     console.log('No AI service configured. Using template fallback.');
     throw new Error('No LLM service available');
   }
@@ -361,7 +361,7 @@ const callOpenAI = async (prompt) => {
 const generateFallbackSummary = (data) => {
   const skills = data.skills?.slice(0, 3).join(', ') || 'various technical skills';
   const degree = data.education?.[0]?.degree || 'Engineering';
-  
+
   return `Motivated ${degree} student with strong foundation in ${skills}. ` +
     `Eager to apply academic knowledge to real-world challenges. ` +
     `Quick learner with excellent problem-solving abilities and team collaboration skills.`;
