@@ -35,28 +35,13 @@ function GetStarted() {
               </div>
             </div>
 
-            {/* Choice Cards */}
-            <div className="choice-cards">
-              <div 
-                className="choice-card"
-                onClick={() => navigate('/login')}
-              >
-                <div className="choice-card-icon">✍️</div>
-                <h3>Build from Scratch</h3>
-                <p>Start fresh and create your resume step by step with our guided builder</p>
-                <span className="choice-card-action">Get Started →</span>
-              </div>
-              
-              <div 
-                className="choice-card"
-                onClick={() => navigate('/upload-resume')}
-              >
-                <div className="choice-card-icon">📄</div>
-                <h3>Upload Resume</h3>
-                <p>Already have a resume? Upload it and enhance it with AI-powered suggestions</p>
-                <span className="choice-card-action">Upload Now →</span>
-              </div>
-            </div>
+            {/* Get Started Button */}
+            <button 
+              className="get-started-btn"
+              onClick={() => navigate('/login')}
+            >
+              Get Started →
+            </button>
           </div>
 
           <div className="how-it-works">

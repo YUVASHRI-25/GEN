@@ -11,6 +11,10 @@ function Dashboard() {
     navigate('/templates')
   }
 
+  const handleUploadResume = () => {
+    navigate('/upload-resume')
+  }
+
   return (
     <div className="dashboard-page">
       <div className="dashboard-container">
@@ -27,11 +31,11 @@ function Dashboard() {
             <button className="btn btn-primary">Get Started</button>
           </div>
 
-          <div className="dashboard-card disabled">
+          <div className="dashboard-card primary" onClick={handleUploadResume}>
             <div className="card-icon">📤</div>
             <h2>Upload Resume</h2>
-            <p>Upload an existing resume to enhance and optimize it</p>
-            <span className="coming-soon">Coming Soon</span>
+            <p>Upload an existing resume to enhance and optimize it with AI</p>
+            <button className="btn btn-primary">Upload Now</button>
           </div>
         </div>
 
