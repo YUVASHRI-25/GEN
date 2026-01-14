@@ -1,0 +1,119 @@
+/* Layout Preview Styles */
+
+.layout-preview-container {
+  background: #e8e8e8;
+  border-radius: 8px;
+  padding: 20px;
+  overflow: auto;
+  max-height: 80vh;
+}
+
+.layout-preview-scaler {
+  margin: 0 auto;
+  transition: transform 0.2s ease;
+}
+
+.layout-preview-content {
+  /* Inherits styles from the injected HTML */
+}
+
+/* Override styles for the PDF page container */
+.layout-preview-content .pdf-page {
+  background: white !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+/* Text element hover for editable mode */
+.layout-preview-container.editable .text-element {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.layout-preview-container.editable .text-element:hover {
+  background: rgba(66, 133, 244, 0.2) !important;
+  outline: 1px dashed #4285f4;
+}
+
+/* Empty state */
+.layout-preview-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: #888;
+  text-align: center;
+}
+
+.layout-preview-empty .empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.layout-preview-empty p {
+  font-size: 14px;
+}
+
+/* Zoom controls */
+.layout-preview-controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 8px;
+  background: #f5f5f5;
+  border-radius: 6px;
+}
+
+.layout-preview-controls button {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.layout-preview-controls button:hover {
+  background: #f0f0f0;
+  border-color: #bbb;
+}
+
+.layout-preview-controls .zoom-level {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  font-size: 13px;
+  color: #666;
+}
+
+/* Print styles */
+@media print {
+  .layout-preview-container {
+    background: white;
+    padding: 0;
+  }
+  
+  .layout-preview-scaler {
+    transform: none !important;
+  }
+  
+  .layout-preview-content .pdf-page {
+    box-shadow: none;
+    margin: 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .layout-preview-container {
+    padding: 10px;
+  }
+  
+  .layout-preview-controls {
+    flex-wrap: wrap;
+  }
+}

@@ -16,7 +16,7 @@ const templatesDir = path.join(__dirname, '../templates');
  */
 const downloadResume = async (req, res) => {
   try {
-    const { resumeData, templateId } = req.body;
+    const { resumeData, templateId, customStyling } = req.body;
 
     if (!resumeData || !resumeData.sections) {
       return res.status(400).json({
@@ -27,8 +27,16 @@ const downloadResume = async (req, res) => {
 
     console.log('📄 Generating PDF with template:', templateId || 'default');
 
-    // Load template configuration
-    const template = loadTemplate(templateId || 'atsTemplate');
+    let template;
+    
+    // If using original format with custom styling, create template from styling
+    if (templateId === 'originalFormat' && customStyling) {
+      template = createTemplateFromStyling(customStyling);
+      console.log('🎨 Using original document styling');
+    } else {
+      // Load template configuration
+      template = loadTemplate(templateId || 'atsTemplate');
+    }
 
     // Generate PDF buffer
     const pdfBuffer = await generatePDFFromSections(resumeData, template);
@@ -52,6 +60,53 @@ const downloadResume = async (req, res) => {
       error: error.message
     });
   }
+};
+
+/**
+ * Create a template configuration from detected styling
+ */
+const createTemplateFromStyling = (styling) => {
+  // Map web fonts to PDF-compatible fonts
+  const fontMap = {
+    'Times New Roman, serif': 'Times-Roman',
+    'Arial, Helvetica, sans-serif': 'Helvetica',
+    'Calibri, sans-serif': 'Helvetica',
+    'Georgia, serif': 'Times-Roman',
+    'Montserrat, sans-serif': 'Helvetica-Bold'
+  };
+
+  // Parse font size from styling (e.g., "11pt" -> 11)
+  const parseFontSize = (size) => {
+    if (!size) return 11;
+    const match = size.match(/(\d+)/);
+    return match ? parseInt(match[1]) : 11;
+  };
+
+  return {
+    name: 'Original Format',
+    description: 'Preserves the original document styling',
+    fonts: {
+      heading: fontMap[styling.headingFont] || 'Helvetica-Bold',
+      body: fontMap[styling.fontFamily] || 'Helvetica',
+      size: {
+        name: 24,
+        section: parseFontSize(styling.headingSize) || 14,
+        body: parseFontSize(styling.fontSize) || 11
+      }
+    },
+    colors: {
+      primary: styling.primaryColor || '#000000',
+      secondary: styling.secondaryColor || '#333333',
+      accent: styling.accentColor || '#000000'
+    },
+    margins: {
+      top: 50,
+      bottom: 50,
+      left: 50,
+      right: 50
+    },
+    layout: styling.layout === 'two-column' ? 'two_column' : 'single_column'
+  };
 };
 
 /**

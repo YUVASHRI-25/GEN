@@ -165,6 +165,33 @@ export const resumeAPI = {
   previewPDF: async (data) => {
     const response = await api.post('/resume/preview-pdf', data)
     return response.data
+  },
+
+  // ============ LAYOUT PRESERVATION ============
+
+  // Convert PDF with layout preservation (exact positioning)
+  convertWithLayout: async (file) => {
+    const formData = new FormData()
+    formData.append('resume', file)
+    const response = await uploadApi.post('/resume/convert-layout', formData)
+    return response.data
+  },
+
+  // Preview layout HTML only
+  previewLayout: async (file, scale = 1) => {
+    const formData = new FormData()
+    formData.append('resume', file)
+    formData.append('scale', scale)
+    const response = await uploadApi.post('/resume/preview-layout', formData)
+    return response.data
+  },
+
+  // Analyze layout structure
+  analyzeLayout: async (file) => {
+    const formData = new FormData()
+    formData.append('resume', file)
+    const response = await uploadApi.post('/resume/analyze-layout', formData)
+    return response.data
   }
 }
 

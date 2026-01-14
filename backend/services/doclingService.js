@@ -45,31 +45,98 @@ try {
 }
 
 /**
+ * Default styling for different resume types
+ */
+const DEFAULT_STYLES = {
+  classic: {
+    fontFamily: 'Times New Roman, serif',
+    fontSize: '11pt',
+    headingFont: 'Times New Roman, serif',
+    headingSize: '14pt',
+    primaryColor: '#000000',
+    secondaryColor: '#333333',
+    accentColor: '#000000',
+    layout: 'single-column',
+    lineHeight: '1.4'
+  },
+  modern: {
+    fontFamily: 'Arial, Helvetica, sans-serif',
+    fontSize: '10pt',
+    headingFont: 'Arial, Helvetica, sans-serif',
+    headingSize: '13pt',
+    primaryColor: '#2c3e50',
+    secondaryColor: '#34495e',
+    accentColor: '#3498db',
+    layout: 'single-column',
+    lineHeight: '1.5'
+  },
+  professional: {
+    fontFamily: 'Calibri, sans-serif',
+    fontSize: '11pt',
+    headingFont: 'Calibri, sans-serif',
+    headingSize: '14pt',
+    primaryColor: '#1a1a2e',
+    secondaryColor: '#16213e',
+    accentColor: '#0f3460',
+    layout: 'single-column',
+    lineHeight: '1.4'
+  },
+  creative: {
+    fontFamily: 'Georgia, serif',
+    fontSize: '10pt',
+    headingFont: 'Montserrat, sans-serif',
+    headingSize: '14pt',
+    primaryColor: '#2d3436',
+    secondaryColor: '#636e72',
+    accentColor: '#6c5ce7',
+    layout: 'two-column',
+    lineHeight: '1.6'
+  }
+};
+
+/**
  * Parse resume document using Docling
  * @param {string} filePath - Path to the uploaded file
- * @returns {Object} Parsed resume data
+ * @returns {Object} Parsed resume data with styling
  */
 const parseResume = async (filePath) => {
   const ext = path.extname(filePath).toLowerCase();
+  let result;
 
   try {
     // Try Docling first (Python-based document parser)
     const doclingResult = await parseWithDocling(filePath);
     if (doclingResult) {
-      return doclingResult;
+      result = doclingResult;
     }
   } catch (error) {
     console.log('Docling parsing failed, using fallback parser:', error.message);
   }
 
   // Fallback to basic parsing
-  if (ext === '.pdf') {
-    return await parsePDF(filePath);
-  } else if (ext === '.docx' || ext === '.doc') {
-    return await parseDOCX(filePath);
+  if (!result) {
+    if (ext === '.pdf') {
+      result = await parsePDF(filePath);
+    } else if (ext === '.docx' || ext === '.doc') {
+      result = await parseDOCX(filePath);
+    } else {
+      throw new Error('Unsupported file format');
+    }
   }
 
-  throw new Error('Unsupported file format');
+  // Store original file as base64 for preview
+  try {
+    const fileBuffer = fs.readFileSync(filePath);
+    result.originalFile = {
+      data: fileBuffer.toString('base64'),
+      mimeType: ext === '.pdf' ? 'application/pdf' : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      extension: ext
+    };
+  } catch (e) {
+    console.log('Could not read original file for preview:', e.message);
+  }
+
+  return result;
 };
 
 /**
@@ -170,7 +237,7 @@ except Exception as e:
 };
 
 /**
- * Fallback PDF parser
+ * Fallback PDF parser with styling detection
  */
 const parsePDF = async (filePath) => {
   if (!pdfParse || typeof pdfParse !== 'function') {
@@ -181,7 +248,12 @@ const parsePDF = async (filePath) => {
   try {
     const dataBuffer = fs.readFileSync(filePath);
     const data = await pdfParse(dataBuffer);
-    return extractSections(data.text);
+    const result = extractSections(data.text);
+    
+    // Detect styling from content patterns
+    result.styling = detectStyling(data.text);
+    
+    return result;
   } catch (error) {
     console.error('PDF parsing error:', error.message);
     return createBasicStructure('Error parsing PDF: ' + error.message);
@@ -189,15 +261,105 @@ const parsePDF = async (filePath) => {
 };
 
 /**
- * Fallback DOCX parser
+ * Fallback DOCX parser with styling extraction
  */
 const parseDOCX = async (filePath) => {
   if (!mammoth) {
     return createBasicStructure('Unable to parse DOCX. Please install mammoth package.');
   }
 
-  const result = await mammoth.extractRawText({ path: filePath });
-  return extractSections(result.value);
+  try {
+    // Extract with style information
+    const options = {
+      styleMap: [
+        "p[style-name='Heading 1'] => h1:fresh",
+        "p[style-name='Heading 2'] => h2:fresh",
+        "p[style-name='Title'] => h1.title:fresh",
+        "b => strong",
+        "i => em"
+      ]
+    };
+    
+    const htmlResult = await mammoth.convertToHtml({ path: filePath }, options);
+    const textResult = await mammoth.extractRawText({ path: filePath });
+    
+    const result = extractSections(textResult.value);
+    
+    // Try to detect styling from HTML output
+    result.styling = detectDocxStyling(htmlResult.value);
+    result.htmlContent = htmlResult.value;
+    
+    return result;
+  } catch (error) {
+    console.error('DOCX parsing error:', error.message);
+    const textResult = await mammoth.extractRawText({ path: filePath });
+    const result = extractSections(textResult.value);
+    result.styling = DEFAULT_STYLES.professional;
+    return result;
+  }
+};
+
+/**
+ * Detect styling patterns from text content
+ */
+const detectStyling = (text) => {
+  const lines = text.split('\n').filter(line => line.trim());
+  
+  // Analyze content to determine style type
+  let styleType = 'professional';
+  
+  // Check for creative indicators (emojis, special characters, unusual formatting)
+  const hasEmojis = /[\u{1F300}-\u{1F9FF}]/u.test(text);
+  const hasSpecialBullets = /[•◦▪►]/g.test(text);
+  const hasColorIndicators = /#[0-9A-Fa-f]{6}/g.test(text);
+  
+  if (hasEmojis || hasColorIndicators) {
+    styleType = 'creative';
+  } else if (hasSpecialBullets) {
+    styleType = 'modern';
+  }
+  
+  // Check text density and formatting
+  const avgLineLength = lines.reduce((sum, line) => sum + line.length, 0) / lines.length;
+  if (avgLineLength > 80) {
+    styleType = 'classic';
+  }
+  
+  // Return detected style with original flag
+  return {
+    ...DEFAULT_STYLES[styleType],
+    detectedType: styleType,
+    preserveOriginal: true
+  };
+};
+
+/**
+ * Detect styling from DOCX HTML output
+ */
+const detectDocxStyling = (html) => {
+  let styling = { ...DEFAULT_STYLES.professional };
+  
+  // Check for heading styles
+  if (html.includes('font-weight: bold') || html.includes('<strong>')) {
+    styling.headingWeight = 'bold';
+  }
+  
+  // Check for colors in inline styles
+  const colorMatch = html.match(/color:\s*#([0-9A-Fa-f]{6})/i);
+  if (colorMatch) {
+    styling.primaryColor = `#${colorMatch[1]}`;
+  }
+  
+  // Check for font families
+  const fontMatch = html.match(/font-family:\s*([^;]+)/i);
+  if (fontMatch) {
+    styling.fontFamily = fontMatch[1].trim();
+  }
+  
+  styling.detectedType = 'original';
+  styling.preserveOriginal = true;
+  
+  return styling;
 };
 
 /**

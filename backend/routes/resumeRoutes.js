@@ -8,6 +8,7 @@ const resumeController = require('../controllers/resumeController');
 const resumeUploadController = require('../controllers/resumeUploadController');
 const aiEnhanceController = require('../controllers/aiEnhanceController');
 const pdfController = require('../controllers/pdfController');
+const layoutPreservationController = require('../controllers/layoutPreservationController');
 const { handleUpload } = require('../utils/fileUpload');
 
 // ============ EXISTING ROUTES ============
@@ -58,5 +59,16 @@ router.get('/templates', pdfController.getTemplates);
 
 // POST /api/resume/preview-pdf - Preview PDF configuration
 router.post('/preview-pdf', pdfController.previewPDF);
+
+// ============ LAYOUT PRESERVATION ROUTES ============
+
+// POST /api/resume/convert-layout - Convert PDF with layout preservation
+router.post('/convert-layout', handleUpload, layoutPreservationController.convertToLayoutHTML);
+
+// POST /api/resume/preview-layout - Get HTML preview only
+router.post('/preview-layout', handleUpload, layoutPreservationController.previewLayout);
+
+// POST /api/resume/analyze-layout - Analyze layout structure
+router.post('/analyze-layout', handleUpload, layoutPreservationController.analyzeLayout);
 
 module.exports = router;

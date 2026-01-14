@@ -1,0 +1,531 @@
+/* Live Layout Preview Styles */
+
+.live-layout-preview {
+  flex: 1;
+  overflow: auto;
+  padding: 24px;
+  background: #e8ebf0;
+  position: relative;
+  min-height: 0;
+}
+
+.live-layout-preview.live-mode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.live-layout-preview.preserved-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Toggle Original Layout Button */
+.toggle-layout-btn {
+  position: sticky;
+  top: 0;
+  padding: 8px 16px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  align-self: flex-end;
+  margin-bottom: 10px;
+}
+
+.toggle-layout-btn:hover {
+  background: #f8f9fa;
+  border-color: #667eea;
+}
+
+/* Preview Scaler */
+.preview-scaler {
+  transition: transform 0.2s ease;
+  position: relative;
+  margin: 0 auto;
+}
+
+/* Preview Wrapper - Contains scaled content and maintains proper height */
+.preview-wrapper {
+  position: relative;
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.preview-scaler.live-view {
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.preview-scaler.original-view {
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.preview-content {
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.preview-content.original-layout {
+  position: relative;
+}
+
+/* Content overlay for updated sections */
+.content-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+}
+
+.overlay-section {
+  transition: opacity 0.3s ease;
+}
+
+/* Override PDF page styles */
+.preview-content {
+  position: relative;
+  display: block;
+}
+
+.preview-content .pdf-page {
+  background: white !important;
+  background-color: white !important;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  overflow: visible;
+  position: relative;
+  display: block;
+}
+
+/* Ensure no dark backgrounds from PDF elements */
+.preview-content .pdf-page > div:not(.text-element):not(.pdf-line) {
+  background: transparent !important;
+}
+
+.preview-content .pdf-page:last-child {
+  margin-bottom: 0;
+}
+
+/* PDF preview container - prevent internal stacking */
+.preview-content .pdf-preview-container {
+  display: block;
+  position: relative;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+/* Text element positioning and styling */
+.preview-content .text-element {
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+  border-radius: 2px;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+/* Ensure text doesn't clip */
+.preview-content .text-element {
+  overflow: visible !important;
+  text-overflow: clip;
+}
+
+.preview-content .text-element:hover {
+  background: rgba(102, 126, 234, 0.15);
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+  z-index: 10;
+}
+
+/* Edit hints */
+.edit-hints {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.hint-badge {
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  font-size: 12px;
+  color: #667eea;
+  font-weight: 500;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+/* Content update animation */
+.preview-content .content-updated {
+  animation: highlightUpdate 0.3s ease;
+}
+
+@keyframes highlightUpdate {
+  0% {
+    background: rgba(102, 126, 234, 0.2);
+  }
+  100% {
+    background: transparent;
+  }
+}
+
+/* Fallback Preview Mode */
+.live-layout-preview.fallback-mode {
+  display: flex;
+  justify-content: center;
+}
+
+.fallback-resume-preview {
+  background: white;
+  padding: 48px 56px;
+  min-height: 792px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  width: 100%;
+  max-width: 612px;
+}
+
+/* Header section in fallback */
+.preview-header-section {
+  text-align: center;
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #1a1a2e;
+}
+
+.preview-header-section .name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 8px 0;
+}
+
+.preview-header-section .subtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.preview-section {
+  margin-bottom: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+}
+
+.preview-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.preview-section[data-section-id] {
+  position: relative;
+}
+
+.preview-section.content-updated {
+  animation: sectionUpdate 0.3s ease;
+}
+
+@keyframes sectionUpdate {
+  0% {
+    background: rgba(102, 126, 234, 0.1);
+    transform: scale(1.002);
+  }
+  100% {
+    background: transparent;
+    transform: scale(1);
+  }
+}
+
+.section-heading {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 12px 0;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #667eea;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.section-content {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #374151;
+}
+
+.section-content p {
+  margin: 0 0 6px 0;
+}
+
+.section-content p:last-child {
+  margin-bottom: 0;
+}
+
+.section-content .empty-content {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Section type specific styles */
+.section-skills .section-content p {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 4px 10px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.section-experience .section-content p:first-child,
+.section-internship .section-content p:first-child,
+.section-projects .section-content p:first-child {
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+/* Empty Preview State */
+.empty-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.empty-preview .empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-preview p {
+  font-size: 14px;
+  max-width: 200px;
+}
+
+/* Scrollbar Styling */
+.live-layout-preview::-webkit-scrollbar {
+  width: 8px;
+}
+
+.live-layout-preview::-webkit-scrollbar-track {
+  background: #e8ebf0;
+}
+
+.live-layout-preview::-webkit-scrollbar-thumb {
+  background: #c5cad3;
+  border-radius: 4px;
+}
+
+.live-layout-preview::-webkit-scrollbar-thumb:hover {
+  background: #a8aeb9;
+}
+
+/* Print Styles */
+@media print {
+  .live-layout-preview {
+    background: white;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .preview-scaler {
+    transform: none !important;
+  }
+
+  .preview-content,
+  .fallback-resume-preview {
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .edit-hints {
+    display: none;
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .live-layout-preview {
+    padding: 16px;
+  }
+
+  .fallback-resume-preview,
+  .live-resume-preview {
+    padding: 24px 30px;
+  }
+
+  .section-heading {
+    font-size: 13px;
+  }
+
+  .section-content {
+    font-size: 12px;
+  }
+
+  .edit-hints,
+  .live-indicator {
+    bottom: 12px;
+    right: 12px;
+  }
+}
+
+/* Live Resume Preview - New Styles */
+.live-resume-preview {
+  background: white;
+  padding: 48px 56px;
+  min-height: 792px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  width: 100%;
+  max-width: 612px;
+}
+
+/* Contact Section */
+.preview-contact-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.preview-contact-section .contact-item {
+  font-size: 12px;
+  color: #666;
+}
+
+.preview-contact-section .contact-item::after {
+  content: '';
+}
+
+/* Section with heading line */
+.preview-section .section-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.preview-section .section-heading .heading-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a1a2e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.preview-section .section-heading .heading-line {
+  flex: 1;
+  height: 2px;
+  background: linear-gradient(to right, #667eea, transparent);
+}
+
+/* Content lines */
+.section-content .content-line {
+  margin: 0 0 6px 0;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #374151;
+}
+
+.section-content .bullet-item {
+  margin: 0 0 6px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #4b5563;
+  list-style-type: disc;
+}
+
+.section-content .line-break {
+  height: 8px;
+}
+
+/* Live Indicator */
+.live-indicator {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+.live-indicator .pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.2);
+  }
+}
+
+.live-indicator .text {
+  font-size: 11px;
+  font-weight: 600;
+  color: #22c55e;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Section type specific styles - enhanced */
+.section-type-skills .section-content .content-line {
+  display: inline-block;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  padding: 4px 12px;
+  background: #f3f4f6;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.section-type-experience .section-content .content-line:first-of-type,
+.section-type-internship .section-content .content-line:first-of-type,
+.section-type-projects .section-content .content-line:first-of-type {
+  font-weight: 600;
+  color: #1a1a2e;
+  font-size: 14px;
+}
+
+/* Empty state hint */
+.empty-preview .hint {
+  font-size: 12px;
+  color: #b8bcc4;
+  margin-top: 8px;
+}

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { resumeAPI } from '../services/api'
+import LayoutPreview from '../components/LayoutPreview'
 import './UploadResume.css'
 
 function UploadResume() {
@@ -12,6 +13,11 @@ function UploadResume() {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState('')
+  
+  // Layout preservation state
+  const [preserveLayout, setPreserveLayout] = useState(false)
+  const [layoutPreview, setLayoutPreview] = useState(null)
+  const [showPreview, setShowPreview] = useState(false)
 
   const acceptedTypes = [
     'application/pdf',
@@ -69,6 +75,8 @@ function UploadResume() {
     setIsUploading(true)
     setUploadProgress(0)
     setError('')
+    setLayoutPreview(null)
+    setShowPreview(false)
 
     try {
       // Simulate progress for better UX
@@ -82,27 +90,60 @@ function UploadResume() {
         })
       }, 200)
 
-      const result = await resumeAPI.uploadResume(selectedFile)
-      
-      clearInterval(progressInterval)
-      setUploadProgress(100)
+      let result
 
-      if (result.success) {
-        // Navigate to editor with parsed data
-        navigate('/resume-editor', { 
-          state: { 
-            parsedResume: result.data,
-            originalFilename: selectedFile.name
-          } 
-        })
+      // Check if user wants layout preservation (PDF only)
+      const isPDF = selectedFile.name.toLowerCase().endsWith('.pdf')
+      
+      if (preserveLayout && isPDF) {
+        // Use layout-preserving conversion
+        result = await resumeAPI.convertWithLayout(selectedFile)
+        clearInterval(progressInterval)
+        setUploadProgress(100)
+
+        if (result.success) {
+          // Show preview first
+          setLayoutPreview(result.data)
+          setShowPreview(true)
+        } else {
+          setError(result.message || 'Failed to preserve layout')
+        }
       } else {
-        setError(result.message || 'Failed to process resume')
+        // Standard semantic extraction
+        result = await resumeAPI.uploadResume(selectedFile)
+        clearInterval(progressInterval)
+        setUploadProgress(100)
+
+        if (result.success) {
+          // Navigate to editor with parsed data
+          navigate('/resume-editor', { 
+            state: { 
+              parsedResume: result.data,
+              originalFilename: selectedFile.name
+            } 
+          })
+        } else {
+          setError(result.message || 'Failed to process resume')
+        }
       }
     } catch (err) {
       console.error('Upload error:', err)
       setError(err.response?.data?.message || 'Failed to upload resume. Please try again.')
     } finally {
       setIsUploading(false)
+    }
+  }
+
+  // Continue to editor with layout-preserved data
+  const handleContinueWithLayout = () => {
+    if (layoutPreview) {
+      navigate('/resume-editor', {
+        state: {
+          parsedResume: layoutPreview,
+          layoutPreserved: true,
+          originalFilename: selectedFile.name
+        }
+      })
     }
   }
 
@@ -113,6 +154,8 @@ function UploadResume() {
   const removeFile = () => {
     setSelectedFile(null)
     setError('')
+    setLayoutPreview(null)
+    setShowPreview(false)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -200,6 +243,62 @@ function UploadResume() {
           </div>
         )}
 
+        {/* Layout Preservation Option - Only for PDF */}
+        {selectedFile && selectedFile.name.toLowerCase().endsWith('.pdf') && !showPreview && (
+          <div className="layout-option">
+            <label className="layout-checkbox">
+              <input
+                type="checkbox"
+                checked={preserveLayout}
+                onChange={(e) => setPreserveLayout(e.target.checked)}
+              />
+              <span className="checkbox-custom"></span>
+              <div className="checkbox-content">
+                <strong>📐 Preserve Original Layout</strong>
+                <span>Keep columns, alignment, spacing, and images exactly as in the PDF</span>
+              </div>
+            </label>
+          </div>
+        )}
+
+        {/* Layout Preview */}
+        {showPreview && layoutPreview && (
+          <div className="layout-preview-section">
+            <div className="preview-header">
+              <h3>✨ Layout Preserved Successfully</h3>
+              <p>
+                {layoutPreview.layout === 'two-column' ? '📊 Two-column layout detected' : '📄 Single-column layout'} 
+                {' • '}{layoutPreview.pageCount} page{layoutPreview.pageCount > 1 ? 's' : ''}
+              </p>
+            </div>
+            
+            <LayoutPreview 
+              htmlContent={layoutPreview.layoutHtml}
+              dimensions={layoutPreview.dimensions}
+              scale={0.8}
+            />
+            
+            <div className="preview-actions">
+              <button 
+                className="btn btn-secondary"
+                onClick={() => {
+                  setShowPreview(false)
+                  setLayoutPreview(null)
+                  setPreserveLayout(false)
+                }}
+              >
+                ← Try Different Method
+              </button>
+              <button 
+                className="btn btn-primary"
+                onClick={handleContinueWithLayout}
+              >
+                Continue to Editor →
+              </button>
+            </div>
+          </div>
+        )}
+
         {isUploading && (
           <div className="upload-progress">
             <div className="progress-bar">
@@ -214,30 +313,35 @@ function UploadResume() {
           </div>
         )}
 
-        <div className="upload-actions">
-          <button 
-            className="btn btn-secondary"
-            onClick={() => navigate('/')}
-          >
-            ← Back
-          </button>
-          <button 
-            className="btn btn-primary"
-            onClick={handleUpload}
-            disabled={!selectedFile || isUploading}
-          >
-            {isUploading ? 'Processing...' : 'Upload & Continue'}
-          </button>
-        </div>
+        {/* Hide these when preview is showing */}
+        {!showPreview && (
+          <>
+            <div className="upload-actions">
+              <button 
+                className="btn btn-secondary"
+                onClick={() => navigate('/')}
+              >
+                ← Back
+              </button>
+              <button 
+                className="btn btn-primary"
+                onClick={handleUpload}
+                disabled={!selectedFile || isUploading}
+              >
+                {isUploading ? 'Processing...' : 'Upload & Continue'}
+              </button>
+            </div>
 
-        <div className="upload-tips">
-          <h4>💡 Tips for best results:</h4>
-          <ul>
-            <li>Use a well-structured resume with clear section headings</li>
-            <li>Ensure text is selectable (not scanned images)</li>
-            <li>Remove any password protection from the file</li>
-          </ul>
-        </div>
+            <div className="upload-tips">
+              <h4>💡 Tips for best results:</h4>
+              <ul>
+                <li>Use a well-structured resume with clear section headings</li>
+                <li>Ensure text is selectable (not scanned images)</li>
+                <li>Remove any password protection from the file</li>
+              </ul>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
