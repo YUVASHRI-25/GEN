@@ -16,6 +16,10 @@
   line-height: 1.4;
   min-height: 500px;
   max-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 
 /* Header / Contact */
@@ -217,6 +221,32 @@
     size: A4;
     margin: 0;
   }
+}
+
+/* Two-column layout fixes */
+.resume-paper [style*="grid"] {
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.resume-paper [style*="grid"] > div {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  box-sizing: border-box;
+}
+
+/* Prevent horizontal overflow */
+.resume-paper * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.resume-paper table {
+  width: 100%;
+  table-layout: fixed;
+  word-wrap: break-word;
 }
 
 /* Responsive Styles */

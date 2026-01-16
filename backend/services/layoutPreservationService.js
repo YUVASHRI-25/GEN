@@ -87,6 +87,7 @@ const convertToHTML = async (filePath) => {
 /**
  * Extract structured sections from layout data
  * Groups text elements into logical sections
+ * Improved to handle Canva templates and complex layouts
  * 
  * @param {Object} layoutData - Raw layout data from converter
  * @returns {Object} Structured sections
@@ -94,81 +95,197 @@ const convertToHTML = async (filePath) => {
 const extractSections = (layoutData) => {
   const sections = [];
   
-  // Section heading patterns
+  // Section heading patterns - expanded for better matching
   const sectionPatterns = [
-    { pattern: /summary|profile|about|objective/i, type: 'summary' },
-    { pattern: /education|academic|qualification/i, type: 'education' },
-    { pattern: /experience|work|employment|career/i, type: 'experience' },
-    { pattern: /intern/i, type: 'internship' },
-    { pattern: /project/i, type: 'projects' },
-    { pattern: /skill|technical|expertise|competenc/i, type: 'skills' },
-    { pattern: /certif|credential|license/i, type: 'certifications' },
-    { pattern: /achieve|award|honor|recognition/i, type: 'achievements' },
-    { pattern: /language/i, type: 'languages' },
-    { pattern: /hobby|interest|activit/i, type: 'hobbies' },
-    { pattern: /contact|email|phone|address/i, type: 'contact' }
+    { pattern: /^(career\s*)?objective$/i, type: 'summary' },
+    { pattern: /^(professional\s*)?(summary|profile|about(\s*me)?|overview)$/i, type: 'summary' },
+    { pattern: /^education(al)?(\s*(details|background|history))?$/i, type: 'education' },
+    { pattern: /^academic(\s*(qualification|background))?s?$/i, type: 'education' },
+    { pattern: /^(work\s*|professional\s*)?(experience|employment|history|career)$/i, type: 'experience' },
+    { pattern: /^intern(ship)?s?(\s*(experience))?$/i, type: 'internship' },
+    { pattern: /^project(s)?(\s*(experience|work|details))?$/i, type: 'projects' },
+    { pattern: /^(technical\s*|key\s*|core\s*)?(skill|expertise|competenc|proficienc)(y|ies|s)?$/i, type: 'skills' },
+    { pattern: /^areas?\s*(of\s*)?(interest|expertise)$/i, type: 'skills' },
+    { pattern: /^certif(icate|ication)s?(\s*(&|and)\s*credentials?)?$/i, type: 'certifications' },
+    { pattern: /^(credential|license)s?$/i, type: 'certifications' },
+    { pattern: /^(key\s*)?(achieve|accomplish)ments?$/i, type: 'achievements' },
+    { pattern: /^(award|honor|recognition)s?$/i, type: 'achievements' },
+    { pattern: /^languages?(\s*(known|spoken))?$/i, type: 'languages' },
+    { pattern: /^(hobby|hobbies|interest|activities)$/i, type: 'hobbies' },
+    { pattern: /^(extra[\s-]?curricular|co[\s-]?curricular)(\s*activities)?$/i, type: 'hobbies' },
+    { pattern: /^contact(\s*(info(rmation)?|details))?$/i, type: 'contact' },
+    { pattern: /^personal(\s*(info(rmation)?|details))?$/i, type: 'contact' },
+    { pattern: /^reference(s)?$/i, type: 'references' },
+    { pattern: /^publication(s)?$/i, type: 'publications' },
+    { pattern: /^(research|paper)s?$/i, type: 'publications' },
+    { pattern: /^(volunteer|community)(\s*(work|service|experience))?$/i, type: 'volunteer' },
+    { pattern: /^(social\s*)?(link|profile)s?$/i, type: 'links' }
+  ];
+  
+  // Keywords that indicate a heading even without special styling
+  const headingKeywords = [
+    'objective', 'summary', 'profile', 'about', 'education', 'experience',
+    'skills', 'projects', 'internship', 'certifications', 'achievements',
+    'languages', 'hobbies', 'interests', 'contact', 'references', 
+    'publications', 'volunteer', 'areas of interest', 'career objective',
+    'education details', 'project experience', 'work experience'
   ];
   
   const detectSectionType = (heading) => {
+    const cleanHeading = heading.trim();
     for (const { pattern, type } of sectionPatterns) {
-      if (pattern.test(heading)) return type;
+      if (pattern.test(cleanHeading)) return type;
     }
     return 'other';
   };
   
+  /**
+   * Check if text is likely a section heading
+   * Uses multiple signals: font size, boldness, keywords, and text length
+   */
+  const isLikelyHeading = (elem, avgFontSize, pageWidth) => {
+    const text = elem.text?.trim().toLowerCase() || '';
+    
+    // Short text is more likely to be a heading (< 50 chars)
+    const isShortText = text.length < 50 && text.length > 1;
+    
+    // Check if text matches known heading keywords
+    const matchesKeyword = headingKeywords.some(keyword => 
+      text === keyword || 
+      text.replace(/[:\-_]/g, ' ').trim() === keyword ||
+      text.startsWith(keyword + ' ') ||
+      text.endsWith(' ' + keyword)
+    );
+    
+    // Font-based detection (larger than average or bold)
+    const isFontHeading = elem.font_size >= avgFontSize * 1.1 || elem.is_bold;
+    
+    // All-caps text is often a heading in Canva templates
+    const isAllCaps = elem.text === elem.text?.toUpperCase() && /[A-Z]/.test(elem.text);
+    
+    // Combined logic: keyword match OR (short + styled)
+    return matchesKeyword || (isShortText && (isFontHeading || isAllCaps));
+  };
+  
   for (const page of layoutData.pages || []) {
     const textElements = page.elements?.text || [];
+    if (!textElements.length) continue;
     
-    // Sort by Y position (top to bottom)
-    const sorted = [...textElements].sort((a, b) => a.y - b.y);
+    const pageWidth = page.width || 612;
+    const pageHeight = page.height || 792;
     
-    let currentSection = null;
-    let lastY = -Infinity;
+    // Calculate average font size for relative comparison
+    const avgFontSize = textElements.reduce((sum, e) => sum + (e.font_size || 12), 0) / textElements.length;
     
-    for (const elem of sorted) {
-      const isHeading = elem.font_size >= 14 || elem.is_bold;
-      const isNewSection = isHeading && (elem.y - lastY > 20);
+    // Detect two-column layout
+    const midpoint = pageWidth / 2;
+    const leftElements = textElements.filter(e => e.x + (e.width || 0) / 2 < midpoint);
+    const rightElements = textElements.filter(e => e.x + (e.width || 0) / 2 >= midpoint);
+    const isTwoColumn = leftElements.length > 5 && rightElements.length > 5;
+    
+    // Process elements - if two-column, process each column separately
+    const processColumn = (elements, columnName) => {
+      // Sort by Y position (top to bottom)
+      const sorted = [...elements].sort((a, b) => a.y - b.y);
       
-      if (isNewSection) {
-        if (currentSection) {
-          sections.push(currentSection);
-        }
-        currentSection = {
-          heading: elem.text,
-          type: detectSectionType(elem.text),
-          column: elem.x < page.width / 2 ? 'left' : 'right',
-          content: [],
-          y: elem.y,
-          pageNum: page.page || 1
-        };
-      } else if (currentSection) {
-        currentSection.content.push(elem.text);
-      } else {
-        // Content before first heading (name, title, etc.)
-        if (!sections.length || sections[sections.length - 1].heading !== 'Header') {
-          sections.push({
-            heading: 'Header',
-            type: 'header',
-            column: 'center',
-            content: [elem.text],
+      let currentSection = null;
+      let lastY = -Infinity;
+      let lastHeadingY = -Infinity;
+      
+      for (const elem of sorted) {
+        const isHeading = isLikelyHeading(elem, avgFontSize, pageWidth);
+        const yGap = elem.y - lastY;
+        const headingGap = elem.y - lastHeadingY;
+        
+        // New section if: heading detected AND (significant gap OR keyword match)
+        const isNewSection = isHeading && (yGap > 15 || headingGap > 30 || detectSectionType(elem.text) !== 'other');
+        
+        if (isNewSection) {
+          if (currentSection && (currentSection.content.length > 0 || currentSection.heading)) {
+            sections.push(currentSection);
+          }
+          
+          const sectionType = detectSectionType(elem.text);
+          currentSection = {
+            heading: elem.text?.trim() || '',
+            type: sectionType,
+            column: columnName,
+            content: [],
             y: elem.y,
             pageNum: page.page || 1
-          });
+          };
+          lastHeadingY = elem.y;
+        } else if (currentSection) {
+          // Add content to current section
+          if (elem.text?.trim()) {
+            currentSection.content.push(elem.text.trim());
+          }
         } else {
-          sections[sections.length - 1].content.push(elem.text);
+          // Content before first heading (name, title, contact info)
+          const headerSection = sections.find(s => s.heading === 'Header' && s.column === columnName);
+          if (headerSection) {
+            if (elem.text?.trim()) {
+              headerSection.content.push(elem.text.trim());
+            }
+          } else {
+            sections.push({
+              heading: 'Header',
+              type: 'header',
+              column: columnName,
+              content: elem.text?.trim() ? [elem.text.trim()] : [],
+              y: elem.y,
+              pageNum: page.page || 1
+            });
+          }
         }
+        
+        lastY = elem.y;
       }
       
-      lastY = elem.y;
-    }
+      // Push the last section
+      if (currentSection && (currentSection.content.length > 0 || currentSection.heading)) {
+        sections.push(currentSection);
+      }
+    };
     
-    if (currentSection) {
-      sections.push(currentSection);
+    if (isTwoColumn) {
+      processColumn(leftElements, 'left');
+      processColumn(rightElements, 'right');
+    } else {
+      processColumn(textElements, 'center');
     }
   }
   
+  // Post-process: merge duplicate headers, clean up empty sections
+  const mergedSections = [];
+  const headerSections = sections.filter(s => s.type === 'header');
+  const nonHeaderSections = sections.filter(s => s.type !== 'header');
+  
+  // Merge all header sections into one
+  if (headerSections.length > 0) {
+    const mergedHeader = {
+      heading: 'Header',
+      type: 'header',
+      column: 'center',
+      content: headerSections.flatMap(h => h.content),
+      y: Math.min(...headerSections.map(h => h.y)),
+      pageNum: headerSections[0].pageNum
+    };
+    mergedSections.push(mergedHeader);
+  }
+  
+  // Add non-header sections (filter out empty ones)
+  for (const section of nonHeaderSections) {
+    if (section.heading || section.content.length > 0) {
+      mergedSections.push(section);
+    }
+  }
+  
+  // Sort by Y position
+  mergedSections.sort((a, b) => a.y - b.y);
+  
   // Transform content arrays to strings for editing
-  return sections.map((section, index) => ({
+  return mergedSections.map((section, index) => ({
     id: `section-${index}`,
     heading: section.heading,
     type: section.type,

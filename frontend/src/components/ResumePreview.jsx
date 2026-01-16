@@ -61,7 +61,9 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
     width: `${100 / zoomLevel}%`,
     margin: '0 auto',
     height: 'fit-content',
-    padding: '20px 0'
+    padding: '10px 0',
+    maxWidth: '100%',
+    boxSizing: 'border-box'
   }
 
   const handleTemplateChange = (templateId) => {
@@ -529,13 +531,13 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
       const rightFiltered = [...new Set([...right, 'customSections'])].filter(sec => sec !== 'contact')
       
       return (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-          <div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', maxWidth: '100%', boxSizing: 'border-box' }}>
+          <div style={{ maxWidth: '100%', overflow: 'hidden', wordWrap: 'break-word', boxSizing: 'border-box' }}>
             {leftFiltered.map((sec) => (
               <div key={sec}>{renderSection(sec)}</div>
             ))}
           </div>
-          <div>
+          <div style={{ maxWidth: '100%', overflow: 'hidden', wordWrap: 'break-word', boxSizing: 'border-box' }}>
             {rightFiltered.map((sec) => (
               <div key={sec}>{renderSection(sec)}
                 {/* Always render custom sections at the bottom of the right column in two-column layout */}
