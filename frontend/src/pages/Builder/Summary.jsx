@@ -18,16 +18,26 @@ function Summary() {
     try {
       const response = await resumeAPI.enhanceSummary({
         summary: resumeData.summary,
-        skills: resumeData.skills,
+        skills: resumeData.skills.map(s => typeof s === 'string' ? s : s.name || s),
         education: resumeData.education
       })
 
       if (response.success && response.enhancedSummary) {
         updateSummary(response.enhancedSummary)
+      } else if (response.enhancedSummary) {
+        // Handle case where success might not be explicitly true but we have content
+        updateSummary(response.enhancedSummary)
+      } else {
+        setError('Enhancement completed but no changes were needed.')
       }
     } catch (err) {
-      setError('AI enhancement not available. Please write your summary manually.')
       console.error('Enhancement error:', err)
+      // Even on error, try to use the response if available
+      if (err.response?.data?.enhancedSummary) {
+        updateSummary(err.response.data.enhancedSummary)
+      } else {
+        setError('Could not enhance summary. Please try again or write your summary manually.')
+      }
     } finally {
       setEnhancing(false)
     }

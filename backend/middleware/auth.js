@@ -1,10 +1,9 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
 
 /**
  * Protect routes - require authentication
  */
-const protect = async (req, res, next) => {
+const protect = (req, res, next) => {
   try {
     let token;
 
@@ -21,34 +20,24 @@ const protect = async (req, res, next) => {
     }
 
     try {
-      // Verify token
+      // Verify token and attach user to request
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      
-      // Get user from token
-      const user = await User.findById(decoded.id);
-      
-      if (!user) {
-        return res.status(401).json({
-          success: false,
-          message: 'User not found'
-        });
-      }
-
-      // Attach user to request
-      req.user = user;
+      req.user = decoded;
       next();
     } catch (error) {
       console.error('Token verification failed:', error.message);
       return res.status(401).json({
         success: false,
-        message: 'Not authorized, invalid token'
+        message: 'Not authorized, invalid token',
+        error: error.message
       });
     }
   } catch (error) {
     console.error('Auth middleware error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error in authentication'
+      message: 'Auth error',
+      error: error.message
     });
   }
 };
@@ -56,7 +45,7 @@ const protect = async (req, res, next) => {
 /**
  * Optional authentication - attach user if token present
  */
-const optionalAuth = async (req, res, next) => {
+const optionalAuth = (req, res, next) => {
   try {
     let token;
 
@@ -67,15 +56,16 @@ const optionalAuth = async (req, res, next) => {
     if (token) {
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = await User.findById(decoded.id);
+        req.user = decoded;
       } catch (error) {
-        // Token invalid, but continue without user
-        req.user = null;
+        console.error('Optional auth token verification failed:', error.message);
+        // Continue without user if token is invalid
       }
     }
 
     next();
   } catch (error) {
+    console.error('Optional auth middleware error:', error);
     next();
   }
 };

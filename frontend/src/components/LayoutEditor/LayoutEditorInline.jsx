@@ -1,17 +1,17 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import InlineEditablePreview from './InlineEditablePreview'
 import './LayoutEditor.css'
 
 /**
- * LayoutEditor Component - Inline Editing Version
+ * LayoutEditor Component - Redesigned
+ * Now uses inline editing directly on the resume
+ * No separate left panel - edit by clicking on resume content
  * 
  * Features:
- * - Direct inline editing on the preserved resume layout
- * - Click any text to edit directly
+ * - Direct inline editing on the preserved layout
  * - Floating "Add Section" button
- * - "Change Template" option
- * - No separate left panel - all editing is done on the resume itself
+ * - "Change Template" button to switch templates
  */
 function LayoutEditor({ 
   initialData, 
@@ -34,10 +34,12 @@ function LayoutEditor({
   
   // UI state
   const [notification, setNotification] = useState(null)
+  const [previewScale, setPreviewScale] = useState(1)
 
   // Initialize with uploaded data
   useEffect(() => {
     if (initialData) {
+      // Transform sections from layout parser to editable format
       const editableSections = transformSections(initialData)
       
       setResumeData({
@@ -57,6 +59,7 @@ function LayoutEditor({
    * Transform parsed sections into editable format
    */
   const transformSections = (data) => {
+    // Prefer semantic sections if available
     if (data.semanticSections && data.semanticSections.length > 0) {
       return data.semanticSections.map((section, index) => ({
         id: `section-${index}`,
@@ -72,6 +75,7 @@ function LayoutEditor({
       }))
     }
     
+    // Fall back to layout-extracted sections
     if (data.sections && data.sections.length > 0) {
       return data.sections.map((section, index) => ({
         id: `section-${index}`,
@@ -162,12 +166,44 @@ function LayoutEditor({
         layoutHtml={resumeData.layoutHtml}
         sections={resumeData.sections}
         dimensions={resumeData.dimensions}
+        scale={previewScale}
         onSectionsUpdate={handleSectionsUpdate}
         onAddSection={handleAddSection}
         resumeData={resumeData}
       />
 
+      {/* Layout Preserved Badge */}
+      {layoutPreserved && (
+        <div className="layout-badge-floating">
+          <span className="badge-icon">📐</span>
+          <span className="badge-text">Layout Preserved</span>
+          <span className="layout-type">
+            {resumeData.layout === 'two-column' ? 'Two-column' : 'Single-column'}
+          </span>
+        </div>
+      )}
 
+      {/* Zoom Controls */}
+      <div className="zoom-controls-floating">
+        <button 
+          className={`zoom-btn ${previewScale === 0.75 ? 'active' : ''}`}
+          onClick={() => setPreviewScale(0.75)}
+        >
+          75%
+        </button>
+        <button 
+          className={`zoom-btn ${previewScale === 1 ? 'active' : ''}`}
+          onClick={() => setPreviewScale(1)}
+        >
+          100%
+        </button>
+        <button 
+          className={`zoom-btn ${previewScale === 1.25 ? 'active' : ''}`}
+          onClick={() => setPreviewScale(1.25)}
+        >
+          125%
+        </button>
+      </div>
     </div>
   )
 }

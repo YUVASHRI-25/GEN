@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import ResumePreview from '../components/ResumePreview'
 import { useResume } from '../context/ResumeContext'
 import { TEMPLATES, DEFAULT_TEMPLATE_ID } from '../templates'
@@ -6,32 +6,62 @@ import './TemplateSelection.css'
 
 function TemplateSelection() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { setSelectedTemplate, setSelectedTemplateData } = useResume()
+
+  // Check if coming from editor with resume data
+  const fromEditor = location.state?.fromEditor
+  const existingResumeData = location.state?.resumeData
 
   const handleSelect = (template) => {
     setSelectedTemplate(template.id)
     setSelectedTemplateData(template)
-    navigate('/builder')
+    
+    // If coming from editor, go back to editor with the new template
+    if (fromEditor && existingResumeData) {
+      navigate('/resume-editor', { 
+        state: { 
+          parsedResume: existingResumeData,
+          layoutPreserved: true,
+          selectedTemplate: template
+        }
+      })
+    } else {
+      navigate('/builder')
+    }
   }
 
   return (
     <div className="template-page">
       <div className="template-header">
         <div>
-          <p className="eyebrow">Choose Your Style</p>
-          <h1>Select a Resume Template</h1>
+          <p className="eyebrow">{fromEditor ? 'Change Template' : 'Choose Your Style'}</p>
+          <h1>{fromEditor ? 'Select a New Template' : 'Select a Resume Template'}</h1>
           <p className="subhead">
-            Pick a template to see the full layout with sample data. The same design will be used in the editor and final resume.
+            {fromEditor 
+              ? 'Choose a different template for your resume. Your content will be preserved.'
+              : 'Pick a template to see the full layout with sample data. The same design will be used in the editor and final resume.'
+            }
           </p>
         </div>
-        <div className="info-box">
-          <p>How it works</p>
-          <ol>
-            <li>Preview the templates with dummy data</li>
-            <li>Select one template</li>
-            <li>Fill your details in the editor — design stays fixed</li>
-          </ol>
-        </div>
+        {!fromEditor && (
+          <div className="info-box">
+            <p>How it works</p>
+            <ol>
+              <li>Preview the templates with dummy data</li>
+              <li>Select one template</li>
+              <li>Fill your details in the editor — design stays fixed</li>
+            </ol>
+          </div>
+        )}
+        {fromEditor && (
+          <button 
+            className="back-to-editor-btn"
+            onClick={() => navigate(-1)}
+          >
+            ← Back to Editor
+          </button>
+        )}
       </div>
 
       <div className="template-grid">
@@ -47,7 +77,7 @@ function TemplateSelection() {
                 className="select-btn"
                 onClick={() => handleSelect(template)}
               >
-                Select Template
+                {fromEditor ? 'Apply Template' : 'Select Template'}
               </button>
             </div>
 
@@ -62,14 +92,16 @@ function TemplateSelection() {
         ))}
       </div>
 
-      <div className="footer-actions">
-        <button
-          className="btn-secondary"
-          onClick={() => handleSelect(TEMPLATES.find(t => t.id === DEFAULT_TEMPLATE_ID) || TEMPLATES[0])}
-        >
-          Skip & use first template
-        </button>
-      </div>
+      {!fromEditor && (
+        <div className="footer-actions">
+          <button
+            className="btn-secondary"
+            onClick={() => handleSelect(TEMPLATES.find(t => t.id === DEFAULT_TEMPLATE_ID) || TEMPLATES[0])}
+          >
+            Skip & use first template
+          </button>
+        </div>
+      )}
     </div>
   )
 }

@@ -365,22 +365,61 @@ const callLLMWithFallback = async (prompt, originalContent) => {
 };
 
 /**
- * Apply basic text enhancements without AI
+ * Apply smart text enhancements without AI
+ * This provides meaningful improvements to the content
  */
-const applyBasicEnhancements = (content) => {
-  // Basic cleanup and formatting
+const applyBasicEnhancements = (content, sectionType = '') => {
+  if (!content || typeof content !== 'string') {
+    return content;
+  }
+  
   let enhanced = content.trim();
   
-  // Capitalize first letter of sentences
+  // Action verbs to use for enhancement
+  const actionVerbs = {
+    experience: ['Developed', 'Implemented', 'Collaborated', 'Managed', 'Led', 'Created', 'Designed', 'Optimized'],
+    project: ['Built', 'Engineered', 'Architected', 'Developed', 'Created', 'Implemented', 'Designed'],
+    skills: ['Proficient in', 'Experienced with', 'Skilled in', 'Strong background in'],
+    summary: ['Motivated', 'Results-driven', 'Detail-oriented', 'Dedicated', 'Proactive']
+  };
+  
+  // Capitalize first letter of each sentence
   enhanced = enhanced.replace(/(^|\.\s+)([a-z])/g, (match, p1, p2) => p1 + p2.toUpperCase());
   
   // Remove extra whitespace
-  enhanced = enhanced.replace(/\s+/g, ' ');
+  enhanced = enhanced.replace(/\\s+/g, ' ');
+  
+  // Remove "I am", "I have", "I" at the beginning (not professional for resumes)
+  enhanced = enhanced.replace(/^(I am|I'm|I have|I)\\s+/i, '');
+  
+  // Add action verb if the content doesn't start with one and is description-like
+  const startsWithAction = /^(Developed|Built|Created|Implemented|Collaborated|Led|Managed|Designed|Engineered|Optimized|Achieved|Delivered|Spearheaded|Orchestrated|Streamlined|Enhanced|Improved|Increased|Reduced|Automated|Integrated)/i.test(enhanced);
+  
+  if (!startsWithAction && enhanced.length > 20) {
+    // Detect section type from content keywords
+    const contentLower = enhanced.toLowerCase();
+    let verbList = actionVerbs.experience;
+    
+    if (contentLower.includes('project') || contentLower.includes('app') || contentLower.includes('website') || contentLower.includes('system')) {
+      verbList = actionVerbs.project;
+    }
+    
+    const randomVerb = verbList[Math.floor(Math.random() * verbList.length)];
+    
+    // Make first letter lowercase to connect with verb
+    enhanced = randomVerb + ' ' + enhanced.charAt(0).toLowerCase() + enhanced.slice(1);
+  }
   
   // Ensure proper ending punctuation
   if (enhanced && !/[.!?]$/.test(enhanced)) {
     enhanced += '.';
   }
+  
+  // Clean up double periods
+  enhanced = enhanced.replace(/\\.{2,}/g, '.');
+  
+  // Clean up space before periods
+  enhanced = enhanced.replace(/\\s+\\./g, '.');
   
   return enhanced;
 };

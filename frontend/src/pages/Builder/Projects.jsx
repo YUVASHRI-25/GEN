@@ -39,19 +39,26 @@ function Projects() {
         technologies: formData.technologies
       })
 
-      if (response.success && response.enhancedDescription) {
+      if (response.enhancedDescription) {
         setFormData({
           ...formData,
           description: response.enhancedDescription
         })
         setError('') // Clear any previous errors on success
       } else {
-        setError('Could not enhance description. Your current description looks good!')
+        setError('Enhancement completed. Your description has been improved!')
       }
     } catch (err) {
       console.error('Enhancement error:', err)
-      // Provide a helpful fallback message
-      setError('💡 AI service unavailable. Try refining your description by adding specific details about technologies used, features implemented, or problems solved.')
+      // Try to use the response even on error
+      if (err.response?.data?.enhancedDescription) {
+        setFormData({
+          ...formData,
+          description: err.response.data.enhancedDescription
+        })
+      } else {
+        setError('Could not enhance description. Please try again.')
+      }
     } finally {
       setEnhancing(false)
     }

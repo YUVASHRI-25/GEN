@@ -47,6 +47,18 @@ function Builder() {
     setZoomLevel(1) // Reset to 100%
   }
 
+  const handleTemplateChange = () => {
+    // Get current template index
+    const currentIndex = TEMPLATES.findIndex(t => t.id === selectedTemplate)
+    // Cycle to next template (or back to first if at the end)
+    const nextIndex = (currentIndex + 1) % TEMPLATES.length
+    const newTemplate = TEMPLATES[nextIndex]
+    if (newTemplate) {
+      setSelectedTemplate(newTemplate.id)
+      setSelectedTemplateData(newTemplate)
+    }
+  }
+
   // Ensure a template is loaded/selected
   useEffect(() => {
     if (!selectedTemplate) {
@@ -305,6 +317,13 @@ function Builder() {
                 disabled={zoomLevel === 1}
               >
                 🔄
+              </button>
+              <button 
+                className="change-template-btn" 
+                onClick={handleTemplateChange}
+                title={`Current: ${selectedTemplateData?.name || 'Modern'} - Click to change`}
+              >
+                🎨
               </button>
             </div>
           </div>

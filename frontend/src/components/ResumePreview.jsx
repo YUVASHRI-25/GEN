@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 import { useResume } from '../context/ResumeContext'
 import { TEMPLATES } from '../templates'
 import './ResumePreview.css'
@@ -6,7 +6,6 @@ import './ResumePreview.css'
 function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) {
   const { resumeData, selectedTemplate, setSelectedTemplate, setSelectedTemplateData } = useResume()
   const data = dataOverride || resumeData
-  const [showTemplateSelector, setShowTemplateSelector] = useState(false)
   
   // Use propTemplate if provided, otherwise use the selected template
   const template = propTemplate || selectedTemplateData
@@ -64,15 +63,6 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
     padding: '10px 0',
     maxWidth: '100%',
     boxSizing: 'border-box'
-  }
-
-  const handleTemplateChange = (templateId) => {
-    const newTemplate = TEMPLATES.find(t => t.id === templateId)
-    if (newTemplate) {
-      setSelectedTemplate(templateId)
-      setSelectedTemplateData(newTemplate)
-    }
-    setShowTemplateSelector(false)
   }
 
   const renderContact = () => {
@@ -564,29 +554,6 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
 
   return (
     <div className="resume-preview" style={zoomLevel !== 1 ? { overflow: 'auto', maxHeight: '90vh' } : {}}>
-      <div className="preview-controls">
-        <div className="template-selector">
-          <button 
-            className="template-selector-button"
-            onClick={() => setShowTemplateSelector(!showTemplateSelector)}
-          >
-            🎨 Change Template
-          </button>
-          {showTemplateSelector && (
-            <div className="template-dropdown">
-              {TEMPLATES.map((t) => (
-                <div 
-                  key={t.id}
-                  className={`template-option ${selectedTemplate === t.id ? 'active' : ''}`}
-                  onClick={() => handleTemplateChange(t.id)}
-                >
-                  {t.name}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
       <div style={zoomLevel !== 1 ? zoomStyle : {}}>
         <div
           className="resume-paper"

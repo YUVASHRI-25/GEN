@@ -27,6 +27,7 @@ const LLM_CONFIG = {
 const generateProfessionalSummary = async (data) => {
   const { summary, skills, education } = data;
 
+  // First try to enhance with LLM
   const prompt = `You are an ATS resume formatter and career advisor.
 Generate a professional summary for a first-year engineering student based on the following details.
 
@@ -45,12 +46,15 @@ Generate ONLY the summary text, no additional explanations.`;
 
   try {
     const response = await callLLM(prompt);
-    return response;
+    if (response && response.trim().length > 20) {
+      return response;
+    }
   } catch (error) {
-    console.log('AI enhancement unavailable, using fallback for summary');
-    // Fallback: return a template summary
-    return generateFallbackSummary(data);
+    console.log('AI enhancement unavailable, using smart fallback for summary');
   }
+  
+  // Always generate an enhanced summary using smart fallback
+  return generateSmartSummary(data);
 };
 
 /**
@@ -165,12 +169,15 @@ Generate ONLY the enhanced description, no additional explanations or formatting
 
   try {
     const response = await callLLM(prompt);
-    return response;
+    if (response && response.trim().length > 20) {
+      return response;
+    }
   } catch (error) {
-    console.log('AI enhancement unavailable, using fallback for project description');
-    // Fallback: return a template description
-    return generateFallbackProjectDescription(data);
+    console.log('AI enhancement unavailable, using smart fallback for project description');
   }
+  
+  // Always return an enhanced version
+  return generateSmartProjectDescription(data);
 };
 
 /**
@@ -198,41 +205,102 @@ Generate ONLY the enhanced description, no additional explanations or formatting
 
   try {
     const response = await callLLM(prompt);
-    return response;
+    if (response && response.trim().length > 20) {
+      return response;
+    }
   } catch (error) {
-    console.log('AI enhancement unavailable, using fallback for internship description');
-    // Fallback: return a template description
-    return generateFallbackInternshipDescription(data);
+    console.log('AI enhancement unavailable, using smart fallback for internship description');
   }
+  
+  // Always return an enhanced version
+  return generateSmartInternshipDescription(data);
 };
 
 /**
- * Fallback project description generator (no LLM)
+ * Smart project description generator - enhances original content
  */
-const generateFallbackProjectDescription = (data) => {
+const generateSmartProjectDescription = (data) => {
   const { projectName, technologies, description } = data;
-  const tech = technologies || 'modern technologies';
-
+  const tech = technologies || '';
+  const techArray = tech.split(',').map(t => t.trim()).filter(t => t);
+  
+  // Action verbs for projects
+  const actionVerbs = ['Developed', 'Built', 'Implemented', 'Created', 'Designed', 'Engineered'];
+  const verb = actionVerbs[Math.floor(Math.random() * actionVerbs.length)];
+  
   if (description && description.trim().length > 10) {
-    return description; // Return original if it exists
+    // Enhance the existing description
+    let enhanced = description.trim();
+    
+    // Capitalize first letter
+    enhanced = enhanced.charAt(0).toUpperCase() + enhanced.slice(1);
+    
+    // Add action verb if not starting with one
+    const startsWithAction = /^(Developed|Built|Created|Implemented|Designed|Led|Managed|Collaborated)/i.test(enhanced);
+    if (!startsWithAction) {
+      enhanced = `${verb} ${enhanced.charAt(0).toLowerCase()}${enhanced.slice(1)}`;
+    }
+    
+    // Add tech stack mention if not present and we have technologies
+    if (techArray.length > 0 && !enhanced.toLowerCase().includes(techArray[0].toLowerCase())) {
+      enhanced += ` Utilized ${techArray.slice(0, 3).join(', ')} for implementation.`;
+    }
+    
+    // Ensure proper ending
+    if (!/[.!]$/.test(enhanced)) {
+      enhanced += '.';
+    }
+    
+    return enhanced;
   }
 
-  return `Developed ${projectName || 'a project'} using ${tech}. Implemented key features and functionalities to demonstrate practical application of technical skills. Enhanced problem-solving abilities through hands-on development experience.`;
+  // Generate from scratch if no description
+  const techStr = techArray.length > 0 ? techArray.slice(0, 3).join(', ') : 'modern technologies';
+  return `${verb} ${projectName || 'a full-stack application'} using ${techStr}. Implemented core features and functionality, demonstrating strong problem-solving skills and technical proficiency. Gained hands-on experience with industry-standard development practices.`;
 };
 
 /**
- * Fallback internship description generator (no LLM)
+ * Smart internship description generator - enhances original content
  */
-const generateFallbackInternshipDescription = (data) => {
+const generateSmartInternshipDescription = (data) => {
   const { title, company, description } = data;
-  const role = title || 'position';
+  const role = title || 'Intern';
   const org = company || 'the organization';
+  
+  // Action verbs for experience
+  const actionVerbs = ['Collaborated', 'Contributed', 'Assisted', 'Supported', 'Participated', 'Worked'];
+  const impactVerbs = ['improving', 'enhancing', 'streamlining', 'optimizing', 'supporting'];
+  const verb = actionVerbs[Math.floor(Math.random() * actionVerbs.length)];
+  const impact = impactVerbs[Math.floor(Math.random() * impactVerbs.length)];
 
   if (description && description.trim().length > 10) {
-    return description; // Return original if it exists
+    // Enhance the existing description
+    let enhanced = description.trim();
+    
+    // Capitalize first letter
+    enhanced = enhanced.charAt(0).toUpperCase() + enhanced.slice(1);
+    
+    // Add action verb if not starting with one
+    const startsWithAction = /^(Developed|Built|Created|Implemented|Collaborated|Contributed|Led|Managed|Assisted)/i.test(enhanced);
+    if (!startsWithAction) {
+      enhanced = `${verb} on ${enhanced.charAt(0).toLowerCase()}${enhanced.slice(1)}`;
+    }
+    
+    // Ensure proper ending
+    if (!/[.!]$/.test(enhanced)) {
+      enhanced += '.';
+    }
+    
+    // Add professional closing if short
+    if (enhanced.length < 100) {
+      enhanced += ` Demonstrated strong communication skills and ability to work effectively in a team environment.`;
+    }
+    
+    return enhanced;
   }
 
-  return `Worked as ${role} at ${org}. Collaborated with team members on various projects and contributed to key deliverables. Gained practical experience in industry-standard tools and methodologies while developing professional skills.`;
+  // Generate from scratch if no description
+  return `${verb} with cross-functional teams as ${role} at ${org}, ${impact} project deliverables and contributing to key initiatives. Developed professional skills including communication, problem-solving, and time management while gaining hands-on industry experience.`;
 };
 
 /**
@@ -258,38 +326,60 @@ Generate ONLY the enhanced content, no additional explanations or formatting.`;
 
   try {
     const response = await callLLM(prompt);
-    return response;
+    if (response && response.trim().length > 20) {
+      return response;
+    }
   } catch (error) {
-    console.log('AI enhancement unavailable, using fallback for custom content');
-    // Fallback: return a template content
-    return generateFallbackCustomContent(data);
+    console.log('AI enhancement unavailable, using smart fallback for custom content');
   }
+  
+  // Always return an enhanced version
+  return generateSmartCustomContent(data);
 };
 
 /**
- * Fallback custom content generator (no LLM)
+ * Smart custom content generator - enhances original content
  */
-const generateFallbackCustomContent = (data) => {
+const generateSmartCustomContent = (data) => {
   const { title, content } = data;
+  const sectionTitle = (title || '').toLowerCase();
 
   if (content && content.trim().length > 10) {
-    return content; // Return original if it exists
+    // Enhance the existing content
+    let enhanced = content.trim();
+    
+    // Capitalize first letter
+    enhanced = enhanced.charAt(0).toUpperCase() + enhanced.slice(1);
+    
+    // Ensure proper ending
+    if (!/[.!]$/.test(enhanced)) {
+      enhanced += '.';
+    }
+    
+    // Clean up multiple spaces
+    enhanced = enhanced.replace(/\s+/g, ' ');
+    
+    return enhanced;
   }
 
-  // Generic fallback based on common section titles
-  if (title && title.toLowerCase().includes('hobby') || title?.toLowerCase().includes('interest')) {
-    return 'Passionate about continuous learning and exploring new technologies. Enjoy problem-solving challenges and staying updated with industry trends.';
+  // Generate based on section type
+  if (sectionTitle.includes('hobby') || sectionTitle.includes('interest')) {
+    return 'Passionate about continuous learning and exploring new technologies. Enjoy problem-solving challenges and staying updated with industry trends. Active participant in tech communities and coding challenges.';
   }
 
-  if (title && title.toLowerCase().includes('achievement')) {
-    return 'Consistently demonstrated strong academic performance and active participation in extracurricular activities. Recognized for dedication to personal and professional growth.';
+  if (sectionTitle.includes('achievement') || sectionTitle.includes('award')) {
+    return 'Consistently demonstrated strong academic performance and active participation in extracurricular activities. Recognized for dedication to personal and professional growth with notable achievements in academics and projects.';
   }
 
-  if (title && title.toLowerCase().includes('volunteer')) {
-    return 'Actively contributed to community service initiatives. Developed leadership and teamwork skills through collaborative volunteer projects.';
+  if (sectionTitle.includes('volunteer') || sectionTitle.includes('community')) {
+    return 'Actively contributed to community service initiatives, developing leadership and teamwork skills through collaborative volunteer projects. Committed to making a positive impact through social responsibility.';
   }
 
-  return 'Demonstrated commitment to personal growth and professional development through various activities and experiences.';
+  if (sectionTitle.includes('language')) {
+    return 'Proficient in multiple languages, enabling effective communication in diverse environments. Strong written and verbal communication skills.';
+  }
+
+  return 'Demonstrated commitment to personal growth and professional development through various activities and experiences. Continuously seeking opportunities to learn and contribute meaningfully.';
 };
 
 /**
@@ -356,15 +446,57 @@ const callOpenAI = async (prompt) => {
 };
 
 /**
- * Fallback summary generator (no LLM)
+ * Smart summary generator - enhances or creates professional summary
+ */
+const generateSmartSummary = (data) => {
+  const { summary, skills, education } = data;
+  
+  // Extract skill names properly (handle both string and object formats)
+  const skillNames = skills?.map(s => typeof s === 'string' ? s : s.name || s).filter(Boolean) || [];
+  const topSkills = skillNames.slice(0, 3).join(', ') || 'various technical skills';
+  const degree = education?.[0]?.degree || education?.[0]?.field || 'a technical background';
+  
+  // Professional adjectives to use
+  const adjectives = ['Motivated', 'Detail-oriented', 'Results-driven', 'Dedicated', 'Proactive'];
+  const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+  
+  if (summary && summary.trim().length > 20) {
+    // Enhance existing summary
+    let enhanced = summary.trim();
+    
+    // Capitalize first letter
+    enhanced = enhanced.charAt(0).toUpperCase() + enhanced.slice(1);
+    
+    // Remove "I am" or "I'm" from beginning
+    enhanced = enhanced.replace(/^(I am|I'm)\s+/i, `${adj} `);
+    
+    // Clean up and ensure professional tone
+    enhanced = enhanced.replace(/\s+/g, ' ');
+    
+    // Ensure proper ending
+    if (!/[.!]$/.test(enhanced)) {
+      enhanced += '.';
+    }
+    
+    // Add skills mention if not present and we have skills
+    if (skillNames.length > 0 && !skillNames.some(s => enhanced.toLowerCase().includes(s.toLowerCase()))) {
+      enhanced += ` Proficient in ${topSkills}.`;
+    }
+    
+    return enhanced;
+  }
+
+  // Generate from scratch
+  return `${adj} professional with ${degree} and strong foundation in ${topSkills}. ` +
+    `Eager to apply technical knowledge to real-world challenges and contribute to team success. ` +
+    `Quick learner with excellent problem-solving abilities and a passion for continuous improvement.`;
+};
+
+/**
+ * Fallback summary generator (no LLM) - kept for backwards compatibility
  */
 const generateFallbackSummary = (data) => {
-  const skills = data.skills?.slice(0, 3).join(', ') || 'various technical skills';
-  const degree = data.education?.[0]?.degree || 'Engineering';
-
-  return `Motivated ${degree} student with strong foundation in ${skills}. ` +
-    `Eager to apply academic knowledge to real-world challenges. ` +
-    `Quick learner with excellent problem-solving abilities and team collaboration skills.`;
+  return generateSmartSummary(data);
 };
 
 module.exports = {

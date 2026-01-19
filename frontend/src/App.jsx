@@ -27,6 +27,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/upload-resume" element={<UploadResume />} />
               <Route path="/resume-editor" element={<ResumeEditor />} />
+              <Route path="/templates" element={<TemplateSelection />} />
 
               {/* Protected Routes */}
               <Route
@@ -42,14 +43,6 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Builder />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/templates"
-                element={
-                  <ProtectedRoute>
-                    <TemplateSelection />
                   </ProtectedRoute>
                 }
               />
