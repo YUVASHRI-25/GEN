@@ -96,11 +96,11 @@
     background: white;
     padding: 0;
   }
-  
+
   .layout-preview-scaler {
     transform: none !important;
   }
-  
+
   .layout-preview-content .pdf-page {
     box-shadow: none;
     margin: 0;
@@ -112,7 +112,7 @@
   .layout-preview-container {
     padding: 10px;
   }
-  
+
   .layout-preview-controls {
     flex-wrap: wrap;
   }

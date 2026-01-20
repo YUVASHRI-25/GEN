@@ -113,7 +113,7 @@
 }
 
 /* Ensure no dark backgrounds from PDF elements */
-.preview-content .pdf-page > div:not(.text-element):not(.pdf-line) {
+.preview-content .pdf-page>div:not(.text-element):not(.pdf-line) {
   background: transparent !important;
 }
 
@@ -178,6 +178,7 @@
   0% {
     background: rgba(102, 126, 234, 0.2);
   }
+
   100% {
     background: transparent;
   }
@@ -246,6 +247,7 @@
     background: rgba(102, 126, 234, 0.1);
     transform: scale(1.002);
   }
+
   100% {
     background: transparent;
     transform: scale(1);
@@ -486,10 +488,13 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.7;
     transform: scale(1.2);

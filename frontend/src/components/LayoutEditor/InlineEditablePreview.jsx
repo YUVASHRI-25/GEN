@@ -56,20 +56,20 @@ function InlineEditablePreview({
    */
   const prepareEditableHtml = useCallback((html) => {
     if (!html) return ''
-    
+
     const parser = new DOMParser()
     const doc = parser.parseFromString(html, 'text/html')
-    
+
     // Find and remove large dark backgrounds
     const allDivs = doc.querySelectorAll('div')
     allDivs.forEach(div => {
       const style = div.getAttribute('style') || ''
       const width = div.style.width ? parseInt(div.style.width) : 0
       const height = div.style.height ? parseInt(div.style.height) : 0
-      
-      const hasBlackBg = style.includes('background') && 
+
+      const hasBlackBg = style.includes('background') &&
         (style.includes('#000') || style.includes('rgb(0') || style.includes('black'))
-      
+
       if (hasBlackBg && (width > 200 || height > 200)) {
         div.remove()
       }
@@ -82,7 +82,7 @@ function InlineEditablePreview({
       el.setAttribute('data-edit-id', `text-${index}`)
       el.classList.add('inline-editable')
     })
-    
+
     return doc.body.innerHTML
   }, [])
 
@@ -94,10 +94,10 @@ function InlineEditablePreview({
     if (editableEl) {
       e.preventDefault()
       e.stopPropagation()
-      
+
       const editId = editableEl.getAttribute('data-edit-id')
       const currentText = editableEl.textContent || ''
-      
+
       setEditingElement({
         id: editId,
         element: editableEl,
@@ -119,7 +119,7 @@ function InlineEditablePreview({
         el.classList.add('content-updated')
         setTimeout(() => el.classList.remove('content-updated'), 300)
       }
-      
+
       // Update sections if callback provided
       if (onSectionsUpdate) {
         // Find and update the matching section
@@ -134,7 +134,7 @@ function InlineEditablePreview({
         })
         onSectionsUpdate(updatedSections)
       }
-      
+
       showNotification('Content updated!')
     }
     setEditingElement(null)
@@ -191,10 +191,10 @@ function InlineEditablePreview({
    */
   const handleChangeTemplate = useCallback(() => {
     // Navigate to template selection with current resume data
-    navigate('/templates', { 
-      state: { 
+    navigate('/templates', {
+      state: {
         fromEditor: true,
-        resumeData: resumeData 
+        resumeData: resumeData
       }
     })
   }, [navigate, resumeData])
@@ -220,9 +220,9 @@ function InlineEditablePreview({
   // Click outside to close add panel
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (showAddPanel && 
-          !e.target.closest('.add-section-floating-panel') && 
-          !e.target.closest('.toolbar-btn.add-btn')) {
+      if (showAddPanel &&
+        !e.target.closest('.add-section-floating-panel') &&
+        !e.target.closest('.toolbar-btn.add-btn')) {
         setShowAddPanel(false)
       }
     }
@@ -241,7 +241,7 @@ function InlineEditablePreview({
 
       {/* Floating Toolbar */}
       <div className="floating-toolbar">
-        <button 
+        <button
           type="button"
           className="toolbar-btn add-btn"
           onClick={() => setShowAddPanel(!showAddPanel)}
@@ -249,7 +249,7 @@ function InlineEditablePreview({
         >
           ➕ Add Section
         </button>
-        <button 
+        <button
           type="button"
           className="toolbar-btn template-btn"
           onClick={handleChangeTemplate}
@@ -261,7 +261,7 @@ function InlineEditablePreview({
 
       {/* Add Section Floating Panel */}
       {showAddPanel && (
-        <AddSectionFloatingPanel 
+        <AddSectionFloatingPanel
           onAddSection={(section) => {
             onAddSection?.(section)
             setShowAddPanel(false)
@@ -279,14 +279,14 @@ function InlineEditablePreview({
         </div>
 
         {layoutHtml ? (
-          <div 
+          <div
             className="preview-wrapper"
             style={{
               width: (dimensions?.width || 612) * currentScale,
               minHeight: (dimensions?.height || 792) * currentScale
             }}
           >
-            <div 
+            <div
               className="preview-scaler"
               style={{
                 transform: `scale(${currentScale})`,
@@ -294,7 +294,7 @@ function InlineEditablePreview({
                 width: dimensions?.width || 612
               }}
             >
-              <div 
+              <div
                 ref={contentRef}
                 className="preview-content editable-content"
                 onClick={handleElementClick}
@@ -313,7 +313,7 @@ function InlineEditablePreview({
       {/* Inline Edit Modal */}
       {editingElement && (
         <div className="inline-edit-modal-overlay" onClick={handleCancelEdit}>
-          <div 
+          <div
             className="inline-edit-modal"
             onClick={(e) => e.stopPropagation()}
           >
@@ -334,7 +334,7 @@ function InlineEditablePreview({
               </div>
             </div>
             <div className="edit-modal-footer">
-              <button 
+              <button
                 className="enhance-btn"
                 onClick={handleEnhance}
                 disabled={isEnhancing || !editedContent.trim()}
@@ -402,7 +402,7 @@ function AddSectionFloatingPanel({ onAddSection, onClose }) {
         <h4>➕ Add Section</h4>
         <button type="button" className="close-btn" onClick={onClose}>✕</button>
       </div>
-      
+
       <div className="floating-panel-body">
         <div className="quick-sections">
           {QUICK_SECTIONS.map(section => (
@@ -420,7 +420,7 @@ function AddSectionFloatingPanel({ onAddSection, onClose }) {
 
         <div className="custom-section-area">
           {!showCustom ? (
-            <button 
+            <button
               type="button"
               className="add-custom-btn"
               onClick={() => setShowCustom(true)}
@@ -437,7 +437,7 @@ function AddSectionFloatingPanel({ onAddSection, onClose }) {
                 onKeyPress={(e) => e.key === 'Enter' && handleAddCustom()}
                 autoFocus
               />
-              <button 
+              <button
                 type="button"
                 className="add-btn"
                 onClick={handleAddCustom}

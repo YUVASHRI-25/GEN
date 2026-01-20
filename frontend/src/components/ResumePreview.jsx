@@ -6,7 +6,7 @@ import './ResumePreview.css'
 function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) {
   const { resumeData, selectedTemplate, setSelectedTemplate, setSelectedTemplateData } = useResume()
   const data = dataOverride || resumeData
-  
+
   // Use propTemplate if provided, otherwise use the selected template
   const template = propTemplate || selectedTemplateData
   const {
@@ -68,42 +68,42 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
   const renderContact = () => {
     // Define basic contact fields (email, phone, location)
     const basicContactFields = [
-      { 
-        key: 'email', 
+      {
+        key: 'email',
         label: contact.email,
         url: contact.email ? `mailto:${contact.email}` : null
       },
-      { 
-        key: 'phone', 
+      {
+        key: 'phone',
         label: contact.phone,
         url: contact.phone ? `tel:${contact.phone.replace(/[^0-9+]/g, '')}` : null
       },
-      { 
-        key: 'location', 
-        label: contact.location 
+      {
+        key: 'location',
+        label: contact.location
       },
     ].filter(item => item.label);
 
     // Define social/website links
     const socialLinks = [
-      { 
-        key: 'linkedin', 
+      {
+        key: 'linkedin',
         url: contact.linkedin ? (contact.linkedin.startsWith('http') ? contact.linkedin : `https://${contact.linkedin}`) : null
       },
-      { 
-        key: 'github', 
+      {
+        key: 'github',
         url: contact.github ? (contact.github.startsWith('http') ? contact.github : `https://${contact.github}`) : null
       },
-      { 
-        key: 'leetcode', 
+      {
+        key: 'leetcode',
         url: contact.leetcode ? (contact.leetcode.startsWith('http') ? contact.leetcode : `https://${contact.leetcode}`) : null
       },
-      { 
-        key: 'portfolio', 
+      {
+        key: 'portfolio',
         url: contact.portfolio ? (contact.portfolio.startsWith('http') ? contact.portfolio : `https://${contact.portfolio}`) : null
       },
-      { 
-        key: 'website', 
+      {
+        key: 'website',
         url: contact.website ? (contact.website.startsWith('http') ? contact.website : `https://${contact.website}`) : null
       },
     ].filter(item => item.url);
@@ -164,9 +164,9 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
           {contactItems.map((item, idx) => (
             <div key={item.key}>
               {item.url ? (
-                <a 
-                  href={item.url} 
-                  target="_blank" 
+                <a
+                  href={item.url}
+                  target="_blank"
                   rel="noopener noreferrer"
                   style={{
                     color: theme.accent || '#2563eb',
@@ -184,11 +184,11 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
               )}
             </div>
           ))}
-          
+
           {/* Social Links Section */}
           {socialLinks.length > 0 && (
             <div style={{ width: '100%', marginTop: '8px' }}>
-              <div style={{ 
+              <div style={{
                 fontSize: theme.bodySize || '10px',
                 fontWeight: 600,
                 color: theme.primary || '#000',
@@ -196,8 +196,8 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
               }}>
                 WEBSITES & SOCIAL LINKS:
               </div>
-              <div style={{ 
-                display: 'flex', 
+              <div style={{
+                display: 'flex',
                 flexWrap: 'wrap',
                 gap: '8px 12px',
                 justifyContent: 'center'
@@ -277,14 +277,14 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
             'Expert': 'Expert',
             'None': 'None'
           };
-          
+
           // Handle both string and object skill formats
           const skillName = typeof skill === 'string' ? skill : skill.name || '';
           const skillLevel = typeof skill === 'object' ? skill.level : 'Intermediate'; // Default to Intermediate if not specified
-          
+
           // Get the level text, defaulting to empty string if not found
           const levelText = proficiencyMap[skillLevel] ? ` (${proficiencyMap[skillLevel]})` : '';
-            
+
           return (
             <li
               key={index}
@@ -341,7 +341,7 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
       console.log('No projects to render')
       return null
     }
-    
+
     return (
       <section
         className="resume-section"
@@ -513,13 +513,13 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
   const renderContent = () => {
     // Filter out 'contact' from sections since it's rendered separately at the top
     const filteredSections = [...new Set([...sectionsOrder, 'customSections'])].filter(sec => sec !== 'contact')
-    
+
     if (template?.layout?.type === 'two-column' && template.layout.columns) {
       const { left = [], right = [] } = template.layout.columns
       // Filter out 'contact' from column arrays and ensure customSections are included
       const leftFiltered = [...new Set([...left, 'customSections'])].filter(sec => sec !== 'contact')
       const rightFiltered = [...new Set([...right, 'customSections'])].filter(sec => sec !== 'contact')
-      
+
       return (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', maxWidth: '100%', boxSizing: 'border-box' }}>
           <div style={{ maxWidth: '100%', overflow: 'hidden', wordWrap: 'break-word', boxSizing: 'border-box' }}>
@@ -531,7 +531,7 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
             {rightFiltered.map((sec) => (
               <div key={sec}>{renderSection(sec)}
                 {/* Always render custom sections at the bottom of the right column in two-column layout */}
-                {sec === rightFiltered[rightFiltered.length - 1] && customSections.length > 0 && 
+                {sec === rightFiltered[rightFiltered.length - 1] && customSections.length > 0 &&
                   !rightFiltered.includes('customSections') && renderSection('customSections')}
               </div>
             ))}

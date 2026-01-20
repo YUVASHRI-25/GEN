@@ -183,12 +183,12 @@
   body * {
     visibility: hidden;
   }
-  
+
   #resume-to-print,
   #resume-to-print * {
     visibility: visible;
   }
-  
+
   #resume-to-print {
     position: absolute;
     left: 0;
@@ -198,7 +198,7 @@
     padding: 0;
     box-shadow: none;
   }
-  
+
   .resume-paper {
     padding: 20px !important;
     margin: 0 !important;
@@ -207,16 +207,16 @@
     width: 100% !important;
     max-width: 100% !important;
   }
-  
+
   .skill-item {
     break-inside: avoid;
     page-break-inside: avoid;
   }
-  
+
   .resume-section {
     page-break-inside: avoid;
   }
-  
+
   @page {
     size: A4;
     margin: 0;
@@ -230,7 +230,7 @@
   box-sizing: border-box;
 }
 
-.resume-paper [style*="grid"] > div {
+.resume-paper [style*="grid"]>div {
   max-width: 100%;
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -254,12 +254,12 @@
   .resume-preview {
     position: static;
   }
-  
+
   .resume-paper {
     padding: 20px;
     font-size: 10px;
   }
-  
+
   .resume-name {
     font-size: 18px;
   }
