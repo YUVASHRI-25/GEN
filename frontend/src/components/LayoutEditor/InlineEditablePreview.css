@@ -82,6 +82,9 @@
     transition: width 0.3s ease, min-height 0.3s ease;
     margin-bottom: 40px;
     box-shadow: none;
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
 }
 
 .preview-scaler {
@@ -89,6 +92,20 @@
     background: transparent;
     box-shadow: none;
     border-radius: 0;
+}
+
+/* PDF Page - The actual white paper with shadow */
+.preview-content .pdf-page,
+.editable-content .pdf-page {
+    background: white !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+.preview-content .pdf-page:last-child,
+.editable-content .pdf-page:last-child {
+    margin-bottom: 0;
 }
 
 /* Updated Section Hover Styles */
