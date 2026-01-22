@@ -4,7 +4,7 @@ import { TEMPLATES } from '../templates'
 import './ResumePreview.css'
 
 function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) {
-  const { resumeData, selectedTemplate, setSelectedTemplate, setSelectedTemplateData } = useResume()
+  const { resumeData, selectedTemplate, selectedTemplateData, setSelectedTemplate, setSelectedTemplateData } = useResume()
   const data = dataOverride || resumeData
 
   // Use propTemplate if provided, otherwise use the selected template
@@ -136,19 +136,17 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
         >
           {contact.name || 'Your Name'}
         </h1>
-        {contact.jobTitle && (
-          <div
-            className="resume-job-title"
-            style={{
-              fontSize: theme.jobSize || '12px',
-              color: theme.secondary || '#555',
-              marginBottom: '12px',
-              fontWeight: 500,
-            }}
-          >
-            {contact.jobTitle}
-          </div>
-        )}
+        <div
+          className="resume-job-title"
+          style={{
+            fontSize: theme.jobSize || '12px',
+            color: theme.secondary || '#555',
+            marginBottom: '12px',
+            fontWeight: 500,
+          }}
+        >
+          {contact.jobTitle || ''}
+        </div>
         <div
           className="contact-info"
           style={{
@@ -551,6 +549,22 @@ function ResumePreview({ zoomLevel = 1, template: propTemplate, dataOverride }) 
     projects.length === 0 &&
     normalizedWork.length === 0 &&
     normalizedInternships.length === 0
+
+  // Check if template has a custom component (like Template5)
+  const CustomComponent = template?.component
+
+  // If template has a custom component, use it instead of default rendering
+  if (CustomComponent) {
+    return (
+      <div className="resume-preview" style={zoomLevel !== 1 ? { overflow: 'auto', maxHeight: '90vh' } : {}}>
+        <div style={zoomLevel !== 1 ? zoomStyle : {}}>
+          <div className="resume-paper" id="resume-to-print">
+            <CustomComponent data={data} />
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="resume-preview" style={zoomLevel !== 1 ? { overflow: 'auto', maxHeight: '90vh' } : {}}>

@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { useResume } from '../../context/ResumeContext'
 
 function Certificates() {
-  const { resumeData, addCertificate, removeCertificate } = useResume()
+  const { resumeData, addCertificate, updateCertificate, removeCertificate } = useResume()
   const [showForm, setShowForm] = useState(false)
+  const [editingIndex, setEditingIndex] = useState(null)
   const [formData, setFormData] = useState({
     name: '',
     issuer: '',
@@ -20,14 +21,31 @@ function Certificates() {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (formData.name) {
-      addCertificate(formData)
+      if (editingIndex !== null) {
+        updateCertificate(editingIndex, formData)
+        setEditingIndex(null)
+      } else {
+        addCertificate(formData)
+      }
       setFormData({ name: '', issuer: '', date: '' })
       setShowForm(false)
     }
   }
 
+  const handleEdit = (index) => {
+    const cert = resumeData.certificates[index]
+    setFormData({
+      name: cert.name || '',
+      issuer: cert.issuer || '',
+      date: cert.date || ''
+    })
+    setEditingIndex(index)
+    setShowForm(true)
+  }
+
   const handleCancel = () => {
     setFormData({ name: '', issuer: '', date: '' })
+    setEditingIndex(null)
     setShowForm(false)
   }
 
@@ -50,12 +68,22 @@ function Certificates() {
         <div className="entries-list">
           {resumeData.certificates.map((cert, index) => (
             <div key={index} className="entry-card">
-              <button 
-                className="remove-btn"
-                onClick={() => removeCertificate(index)}
-              >
-                ×
-              </button>
+              <div className="entry-actions">
+                <button 
+                  className="edit-btn"
+                  onClick={() => handleEdit(index)}
+                  title="Edit"
+                >
+                  ✏️
+                </button>
+                <button 
+                  className="remove-btn"
+                  onClick={() => removeCertificate(index)}
+                  title="Delete"
+                >
+                  ×
+                </button>
+              </div>
               <div className="entry-header">
                 <span className="entry-title">{cert.name}</span>
                 <span className="entry-date">{cert.date}</span>
@@ -76,7 +104,7 @@ function Certificates() {
         </button>
       ) : (
         <form className="entry-form" onSubmit={handleSubmit}>
-          <h4>Add Certificate</h4>
+          <h4>{editingIndex !== null ? 'Edit Certificate' : 'Add Certificate'}</h4>
           
           <div className="form-group">
             <label htmlFor="name">Certificate Name *</label>
@@ -118,7 +146,7 @@ function Certificates() {
           </div>
 
           <div className="entry-form-buttons">
-            <button type="submit" className="add-btn">Save Certificate</button>
+            <button type="submit" className="add-btn">{editingIndex !== null ? 'Update Certificate' : 'Save Certificate'}</button>
             <button type="button" className="cancel-btn" onClick={handleCancel}>Cancel</button>
           </div>
         </form>
@@ -153,6 +181,33 @@ function Certificates() {
       <style>{`
         .entries-list {
           margin-bottom: 20px;
+        }
+        
+        .entry-actions {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          display: flex;
+          gap: 8px;
+        }
+        
+        .edit-btn {
+          background: #e0e7ff;
+          border: none;
+          border-radius: 6px;
+          width: 28px;
+          height: 28px;
+          cursor: pointer;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+        }
+        
+        .edit-btn:hover {
+          background: #c7d2fe;
+          transform: scale(1.1);
         }
         
         .add-entry-btn {

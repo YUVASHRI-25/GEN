@@ -6,7 +6,7 @@
 
 .builder-container {
   display: grid;
-  grid-template-columns: 1fr 400px;
+  grid-template-columns: 1fr 1fr;
   gap: 32px;
   max-width: 1400px;
   margin: 0 auto;
@@ -325,20 +325,8 @@
   font-size: 13px;
 }
 
-.remove-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: none;
-  border: none;
-  color: #999;
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.remove-btn:hover {
-  color: #c00;
-}
+/* .remove-btn styles are now handled in individual component files */
+/* This prevents conflicts with .entry-actions flex layout */
 
 /* Entry Form */
 .entry-form {

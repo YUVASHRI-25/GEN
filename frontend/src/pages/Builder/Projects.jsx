@@ -4,8 +4,9 @@ import { saveResume } from '../../api/resumeApi'
 import { resumeAPI } from '../../services/api'
 
 function Projects() {
-  const { resumeData, addProject, removeProject } = useResume()
+  const { resumeData, addProject, updateProject, removeProject } = useResume()
   const [showForm, setShowForm] = useState(false)
+  const [editingIndex, setEditingIndex] = useState(null)
   const [formData, setFormData] = useState({
     name: '',
     technologies: '',
@@ -92,31 +93,44 @@ function Projects() {
         achievements: []
       }
       
-      console.log('Adding project:', newProject)
-      console.log('Current projects before add:', resumeData.projects)
-      
-      // Add project to the state - this will immediately update the preview
-      addProject(newProject)
-      
-      // Log after add (note: state may not be updated immediately due to React batching)
-      setTimeout(() => {
-        console.log('Projects after add (delayed):', resumeData.projects)
-      }, 100)
+      if (editingIndex !== null) {
+        console.log('Updating project:', newProject)
+        updateProject(editingIndex, newProject)
+        setEditingIndex(null)
+      } else {
+        console.log('Adding project:', newProject)
+        console.log('Current projects before add:', resumeData.projects)
+        addProject(newProject)
+      }
       
       // Reset form and hide it
       setFormData({ name: '', technologies: '', duration: '', description: '', link: '' })
       setShowForm(false)
       
-      // Note: The project is now saved to localStorage via the context automatically
-      // No need to call handleSaveAll here as it was causing timing issues
     } catch (error) {
       console.error('Error saving project:', error)
       alert('Failed to save project. Please try again.')
     }
   }
 
+  const handleEdit = (index) => {
+    const project = resumeData.projects[index]
+    setFormData({
+      name: project.name || '',
+      technologies: Array.isArray(project.technologies) 
+        ? project.technologies.join(', ') 
+        : project.technologies || '',
+      duration: project.duration || '',
+      description: project.description || '',
+      link: project.link || ''
+    })
+    setEditingIndex(index)
+    setShowForm(true)
+  }
+
   const handleCancel = () => {
     setFormData({ name: '', technologies: '', duration: '', description: '', link: '' })
+    setEditingIndex(null)
     setShowForm(false)
   }
 
@@ -163,12 +177,22 @@ function Projects() {
         <div className="entries-list">
           {resumeData.projects.map((project, index) => (
             <div key={index} className="entry-card">
-              <button 
-                className="remove-btn"
-                onClick={() => removeProject(index)}
-              >
-                ×
-              </button>
+              <div className="entry-actions">
+                <button 
+                  className="edit-btn"
+                  onClick={() => handleEdit(index)}
+                  title="Edit"
+                >
+                  ✏️
+                </button>
+                <button 
+                  className="remove-btn"
+                  onClick={() => removeProject(index)}
+                  title="Delete"
+                >
+                  ×
+                </button>
+              </div>
               <div className="entry-header">
                 <span className="entry-title">{project.name}</span>
                 <span className="entry-date">{project.duration}</span>
@@ -204,7 +228,7 @@ function Projects() {
         </button>
       ) : (
         <form className="entry-form" onSubmit={handleSubmit}>
-          <h4>Add Project</h4>
+          <h4>{editingIndex !== null ? 'Edit Project' : 'Add Project'}</h4>
           
           <div className="form-row">
             <div className="form-group">
@@ -299,7 +323,7 @@ function Projects() {
             className="add-btn"
             disabled={isSaving || !formData.name}
           >
-            {isSaving ? 'Saving...' : 'Save Project'}
+            {isSaving ? 'Saving...' : (editingIndex !== null ? 'Update Project' : 'Save Project')}
           </button>
             <button type="button" className="cancel-btn" onClick={handleCancel}>Cancel</button>
           </div>
@@ -359,6 +383,63 @@ function Projects() {
 
         .entries-list {
           margin-bottom: 20px;
+          padding-top: 8px;
+        }
+        
+        .entry-card {
+          margin-top: 40px;
+        }
+        
+        .entry-card:first-child {
+          margin-top: 0;
+        }
+        
+        .entry-actions {
+          position: absolute;
+          top: -36px;
+          right: 0;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 8px;
+          z-index: 10;
+        }
+        
+        .edit-btn,
+        .remove-btn {
+          background: #e0e7ff;
+          border: none;
+          border-radius: 6px;
+          width: 28px;
+          height: 28px;
+          min-width: 28px;
+          min-height: 28px;
+          cursor: pointer;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+          flex-shrink: 0;
+        }
+        
+        .edit-btn:hover {
+          background: #c7d2fe;
+          transform: scale(1.1);
+        }
+        
+        .remove-btn {
+          background: #fee2e2;
+          color: #dc2626;
+          font-size: 18px;
+          font-weight: bold;
+          line-height: 1;
+        }
+        
+        .remove-btn:hover {
+          background: #fecaca;
+          color: #b91c1c;
+          transform: scale(1.1);
         }
         
         .project-tech {
@@ -510,6 +591,34 @@ function Projects() {
         .description-tips li {
           margin: 4px 0;
           color: #4a5568;
+        }
+        
+        @media (max-width: 480px) {
+          .entry-actions {
+            top: -32px;
+            gap: 6px;
+          }
+          
+          .entry-card {
+            margin-top: 36px;
+          }
+          
+          .entry-card:first-child {
+            margin-top: 0;
+          }
+          
+          .edit-btn,
+          .remove-btn {
+            width: 26px;
+            height: 26px;
+            min-width: 26px;
+            min-height: 26px;
+            font-size: 12px;
+          }
+          
+          .remove-btn {
+            font-size: 16px;
+          }
         }
       `}</style>
     </div>

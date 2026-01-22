@@ -148,6 +148,13 @@ export function ResumeProvider({ children }) {
     }))
   }
 
+  // Update certificate
+  const updateCertificate = (index, certificate) => {
+    const updated = [...resumeData.certificates]
+    updated[index] = certificate
+    updateResumeSection('certificates', updated)
+  }
+
   // Remove certificate
   const removeCertificate = (index) => {
     const updated = resumeData.certificates.filter((_, i) => i !== index)
@@ -256,6 +263,7 @@ export function ResumeProvider({ children }) {
     updateInternship,
     removeInternship,
     addCertificate,
+    updateCertificate,
     removeCertificate,
     updateSummary,
     updateLanguages,

@@ -264,3 +264,14 @@
     font-size: 18px;
   }
 }
+
+/* ===== TEMPLATE 5 (Modern Gray) Override ===== */
+/* When using a custom component template, reset the paper padding */
+.resume-paper:has(.t5-paper) {
+  padding: 0;
+}
+
+.resume-paper .t5-paper {
+  width: 100%;
+  min-height: 100%;
+}

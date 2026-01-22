@@ -3,8 +3,9 @@ import { useResume } from '../../context/ResumeContext'
 import { resumeAPI } from '../../services/api'
 
 function Internship() {
-  const { resumeData, addInternship, removeInternship } = useResume()
+  const { resumeData, addInternship, updateInternship, removeInternship } = useResume()
   const [showForm, setShowForm] = useState(false)
+  const [editingIndex, setEditingIndex] = useState(null)
   const [formData, setFormData] = useState({
     title: '',
     company: '',
@@ -65,14 +66,32 @@ function Internship() {
   const handleSubmit = (e) => {
     e.preventDefault()
     if (formData.title && formData.company) {
-      addInternship(formData)
+      if (editingIndex !== null) {
+        updateInternship(editingIndex, formData)
+        setEditingIndex(null)
+      } else {
+        addInternship(formData)
+      }
       setFormData({ title: '', company: '', duration: '', description: '' })
       setShowForm(false)
     }
   }
 
+  const handleEdit = (index) => {
+    const intern = resumeData.internship[index]
+    setFormData({
+      title: intern.title || intern.position || '',
+      company: intern.company || '',
+      duration: intern.duration || '',
+      description: intern.description || ''
+    })
+    setEditingIndex(index)
+    setShowForm(true)
+  }
+
   const handleCancel = () => {
     setFormData({ title: '', company: '', duration: '', description: '' })
+    setEditingIndex(null)
     setShowForm(false)
   }
 
@@ -86,14 +105,24 @@ function Internship() {
         <div className="entries-list">
           {resumeData.internship.map((intern, index) => (
             <div key={index} className="entry-card">
-              <button 
-                className="remove-btn"
-                onClick={() => removeInternship(index)}
-              >
-                ×
-              </button>
+              <div className="entry-actions">
+                <button 
+                  className="edit-btn"
+                  onClick={() => handleEdit(index)}
+                  title="Edit"
+                >
+                  ✏️
+                </button>
+                <button 
+                  className="remove-btn"
+                  onClick={() => removeInternship(index)}
+                  title="Delete"
+                >
+                  ×
+                </button>
+              </div>
               <div className="entry-header">
-                <span className="entry-title">{intern.title}</span>
+                <span className="entry-title">{intern.title || intern.position}</span>
                 <span className="entry-date">{intern.duration}</span>
               </div>
               <div className="entry-subtitle">{intern.company}</div>
@@ -115,7 +144,7 @@ function Internship() {
         </button>
       ) : (
         <form className="entry-form" onSubmit={handleSubmit}>
-          <h4>Add Internship</h4>
+          <h4>{editingIndex !== null ? 'Edit Internship' : 'Add Internship'}</h4>
           
           <div className="form-row">
             <div className="form-group">
@@ -194,7 +223,7 @@ function Internship() {
           </div>
 
           <div className="entry-form-buttons">
-            <button type="submit" className="add-btn">Save Internship</button>
+            <button type="submit" className="add-btn">{editingIndex !== null ? 'Update Internship' : 'Save Internship'}</button>
             <button type="button" className="cancel-btn" onClick={handleCancel}>Cancel</button>
           </div>
         </form>
@@ -217,6 +246,63 @@ function Internship() {
       <style>{`
         .entries-list {
           margin-bottom: 20px;
+          padding-top: 8px;
+        }
+        
+        .entry-card {
+          margin-top: 40px;
+        }
+        
+        .entry-card:first-child {
+          margin-top: 0;
+        }
+        
+        .entry-actions {
+          position: absolute;
+          top: -36px;
+          right: 0;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 8px;
+          z-index: 10;
+        }
+        
+        .edit-btn,
+        .remove-btn {
+          background: #e0e7ff;
+          border: none;
+          border-radius: 6px;
+          width: 28px;
+          height: 28px;
+          min-width: 28px;
+          min-height: 28px;
+          cursor: pointer;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+          flex-shrink: 0;
+        }
+        
+        .edit-btn:hover {
+          background: #c7d2fe;
+          transform: scale(1.1);
+        }
+        
+        .remove-btn {
+          background: #fee2e2;
+          color: #dc2626;
+          font-size: 18px;
+          font-weight: bold;
+          line-height: 1;
+        }
+        
+        .remove-btn:hover {
+          background: #fecaca;
+          color: #b91c1c;
+          transform: scale(1.1);
         }
         
         .entry-description {
@@ -332,6 +418,34 @@ function Internship() {
         .description-tips li {
           margin: 4px 0;
           color: #4a5568;
+        }
+        
+        @media (max-width: 480px) {
+          .entry-actions {
+            top: -32px;
+            gap: 6px;
+          }
+          
+          .entry-card {
+            margin-top: 36px;
+          }
+          
+          .entry-card:first-child {
+            margin-top: 0;
+          }
+          
+          .edit-btn,
+          .remove-btn {
+            width: 26px;
+            height: 26px;
+            min-width: 26px;
+            min-height: 26px;
+            font-size: 12px;
+          }
+          
+          .remove-btn {
+            font-size: 16px;
+          }
         }
       `}</style>
     </div>

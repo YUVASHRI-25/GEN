@@ -1,3 +1,6 @@
+// Template 5 Import - Modern Gray (Two-Column Professional)
+import { Template5, template5Config, template5DummyData } from './template5'
+
 // Template catalog with dummy data and styling for previews and builder
 export const TEMPLATES = [
   {
@@ -294,6 +297,38 @@ export const TEMPLATES = [
         { degree: 'B.S. Computer Science', institution: 'State University', year: '2015 - 2019', gpa: '3.7/4.0' },
       ],
     },
+  },
+  // Template 5: Modern Gray - Two Column Professional
+  {
+    id: 'modern-gray',
+    name: 'Modern Gray',
+    description: 'Professional two-column resume with modern typography and elegant gray tones',
+    layout: { type: 'two-column', leftWidth: '35%', rightWidth: '65%' },
+    // Custom renderer component
+    component: Template5,
+    // Template-specific theme (locked design)
+    theme: {
+      fontFamily: "'Inter', sans-serif",
+      headingFamily: "'Poppins', sans-serif",
+      nameSize: '42px',
+      jobSize: '16px',
+      bodySize: '13px',
+      sectionSize: '14px',
+      weightBold: 600,
+      weightBody: 400,
+      primary: '#2f2f2f',
+      secondary: '#6b7280',
+      accent: '#e5e7eb',
+      background: '#ffffff',
+      divider: '#d1d5db',
+      contactSeparator: ' | ',
+      bullet: '•',
+      sectionSpacing: '24px',
+      itemSpacing: '16px',
+      padding: '40px',
+    },
+    sections: ['contact', 'summary', 'education', 'skills', 'languages', 'workExperience', 'projects', 'references'],
+    dummyData: template5DummyData,
   },
 ]
 
